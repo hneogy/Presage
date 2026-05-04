@@ -1,0 +1,6 @@
+title: Présage
+description: Personal calibrated forecasting — predict things about your life, score your accuracy with proper scoring rules, see the gap between confidence and reality.
+theme: jekyll-theme-minimal
+show_downloads: false
+google_analytics: ""
+permalink: /:basename/
