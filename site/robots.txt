@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://presage.neogy.dev/sitemap.xml

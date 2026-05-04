@@ -1,0 +1,8 @@
+# Cloudflare Pages clean-URL routing.
+# /privacy → /privacy.html, etc. The 200 status (not 301) means the
+# browser address bar keeps the clean URL while the server serves the
+# .html. This matches the URLs already published in App Store Connect
+# notes and avoids any visible .html in marketing references.
+/privacy        /privacy.html        200
+/accessibility  /accessibility.html  200
+/support        /support.html        200

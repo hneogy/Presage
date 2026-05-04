@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070D12" />
+  <title>Privacy Policy — Présage</title>
+  <meta name="description" content="Présage collects nothing. All data lives on your device. Read the full privacy policy." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="canonical" href="https://presage.neogy.dev/privacy" />
+</head>
+<body>
+
+  <div class="wrap">
+    <nav>
+      <a href="/" class="brand">
+        <span class="glyph"></span>
+        Présage
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/accessibility">Accessibility</a>
+        <a href="/support">Support</a>
+      </div>
+    </nav>
+  </div>
+
+  <article class="article">
+    <a href="/" class="back">Home</a>
+    <h1>Privacy Policy</h1>
+    <p class="meta">Last updated: 2026-05-04</p>
+
+    <p>Présage collects nothing. This is the entire policy in one sentence. The rest of this page exists so you (and Apple's review team) can verify that claim against specifics.</p>
+
+    <hr />
+
+    <h2>What we don't collect</h2>
+    <ul>
+      <li>No analytics</li>
+      <li>No telemetry</li>
+      <li>No crash reporting</li>
+      <li>No advertising identifiers</li>
+      <li>No device identifiers</li>
+      <li>No location</li>
+      <li>No contacts, photos, microphone, or camera access</li>
+      <li>No usage statistics</li>
+      <li>No A/B testing infrastructure</li>
+      <li>No third-party SDKs of any kind</li>
+    </ul>
+    <p>The app's <code>PrivacyInfo.xcprivacy</code> manifest declares <code>NSPrivacyTracking = false</code> and an empty <code>NSPrivacyTrackingDomains</code> array. The corresponding App Store Privacy Nutrition Label is <strong>"Data Not Collected."</strong></p>
+
+    <hr />
+
+    <h2>What's stored on your device</h2>
+    <p>Every prediction you create, every calibration snapshot, every training answer, every flashcard, and every AI scoring result is written to a <strong>SwiftData store inside Présage's app container on your device</strong>. Nothing is ever transmitted by Présage to any server we operate — because we don't operate any servers.</p>
+    <p>This data is owned by you. You can export it at any time (More tab → Data &amp; Account → Markdown / Obsidian export, or CSV) and delete it at any time (Settings → Reset Présage).</p>
+
+    <hr />
+
+    <h2>Optional iCloud sync</h2>
+    <p><strong>Off by default.</strong></p>
+    <p>If you turn on iCloud Sync in Settings, your SwiftData store syncs through <strong>your private CloudKit database</strong> — visible to you across your Apple ID's devices, never to us, never to anyone else. Apple operates the CloudKit infrastructure under their privacy policy.</p>
+    <p>If you turn off iCloud Sync, the app reverts to local-only on next launch. If you reset Présage with iCloud Sync on, the next sync propagates the deletion to your other devices.</p>
+
+    <hr />
+
+    <h2>Optional HealthKit access</h2>
+    <p><strong>Off by default.</strong></p>
+    <p>If you toggle "Mood from Health" in Settings, Présage requests read access to <strong>State of Mind</strong> entries to optionally pre-fill mood when you create predictions. This data is read on-device only. Présage never writes to HealthKit and never transmits HealthKit data anywhere.</p>
+    <p>The <code>NSHealthUpdateUsageDescription</code> string in the Info.plist exists because the HealthKit entitlement requires it; the app explicitly does not write to HealthKit.</p>
+
+    <hr />
+
+    <h2>Optional AI features</h2>
+    <p>The on-device Apple Foundation Models LLM (iOS 18+ on supported devices) runs <strong>entirely locally</strong>. No prompts ever leave your device.</p>
+    <p>If you add your own OpenAI or Anthropic API keys (More tab → AI → AI keys), prompts go <strong>directly from your device</strong> to those providers. Présage never proxies, logs, or sees any of this. Your keys live in this device's keychain and are not transmitted anywhere by Présage. Your usage of those services is governed by OpenAI's and Anthropic's respective privacy policies.</p>
+
+    <hr />
+
+    <h2>Optional anonymous standing</h2>
+    <p><strong>Off by default.</strong></p>
+    <p>If you opt in to the global leaderboard, Présage submits <strong>a single number</strong> — your aggregated Brier score — under a pseudonym you control. No prediction text. No dates. No metadata. No account. You can opt out at any time, and the next sync removes your entry.</p>
+
+    <hr />
+
+    <h2>Required-reason API declarations</h2>
+    <p>iOS requires apps to declare why they use certain platform APIs. Présage uses:</p>
+    <ul>
+      <li><strong>UserDefaults</strong> — to remember your preferences (theme, notification cadence, onboarding status)</li>
+      <li><strong>File timestamp APIs</strong> — to order your prediction history correctly</li>
+      <li><strong>System boot time APIs</strong> — to compute relative timestamps for Live Activities</li>
+      <li><strong>Disk space APIs</strong> — to warn you before exporting a vault that wouldn't fit</li>
+    </ul>
+    <p>None of these are tied to identification, fingerprinting, advertising, or tracking. The full machine-readable manifest is shipped at <code>Presage/PrivacyInfo.xcprivacy</code> in the app bundle.</p>
+
+    <hr />
+
+    <h2>App Tracking Transparency</h2>
+    <p>Présage does not track. The app does not call <code>ATTrackingManager.requestTrackingAuthorization()</code> because it has nothing to ask permission for.</p>
+
+    <hr />
+
+    <h2>Children's privacy</h2>
+    <p>Présage is rated 4+ on the App Store and does not collect any data from any user, including children. The app contains no advertising and no in-app purchases.</p>
+
+    <hr />
+
+    <h2>Changes to this policy</h2>
+    <p>This policy may be updated when the app changes. Substantial changes will be highlighted in the version's release notes. The current version of this document always lives at <a href="https://github.com/hneogy/Presage/blob/main/site/privacy.html">github.com/hneogy/Presage</a> — version history is fully auditable.</p>
+
+    <hr />
+
+    <h2>Contact</h2>
+    <p>Questions about this privacy policy:</p>
+    <p><strong>Honorius M. Neogy</strong> — <a href="mailto:honorius@neogy.dev">honorius@neogy.dev</a></p>
+  </article>
+
+</body>
+</html>

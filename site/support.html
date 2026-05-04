@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070D12" />
+  <title>Support — Présage</title>
+  <meta name="description" content="Quick start guide, FAQ, and contact for Présage." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="canonical" href="https://presage.neogy.dev/support" />
+</head>
+<body>
+
+  <div class="wrap">
+    <nav>
+      <a href="/" class="brand">
+        <span class="glyph"></span>
+        Présage
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/accessibility">Accessibility</a>
+      </div>
+    </nav>
+  </div>
+
+  <article class="article">
+    <a href="/" class="back">Home</a>
+    <h1>Support</h1>
+    <p class="meta">Stuck on something? This page covers the most common questions. If yours isn't here, email <a href="mailto:honorius@neogy.dev">honorius@neogy.dev</a> — I read every message.</p>
+
+    <hr />
+
+    <h2>Quick start</h2>
+    <ol>
+      <li><strong>Tap the orange "+" button</strong> to make your first prediction.</li>
+      <li>Write what you predict, set your confidence (50–99%), describe what counts as "yes," and pick a resolution date.</li>
+      <li><strong>When the date arrives, Présage notifies you.</strong> Tap the notification.</li>
+      <li>Answer Yes / No / Ambiguous. Présage hides your original confidence at this step on purpose — see "Why does Présage hide my confidence" below.</li>
+      <li>After you answer, your Brier score updates and the calibration curve fills in.</li>
+    </ol>
+    <p>The Knowledge Center inside the app (More → Knowledge Center) is the most thorough reference.</p>
+
+    <hr />
+
+    <h2>Frequently asked questions</h2>
+
+    <h3>Why does Présage hide my confidence at resolution time?</h3>
+    <p>To prevent self-deception. If you saw "85%" before answering, you'd anchor on it and rationalize a "yes." By hiding it until you commit to an answer, your resolution reflects what actually happened — not what you wanted to have happened.</p>
+
+    <h3>What's a Brier score?</h3>
+    <p>It's a measure of how well-calibrated your predictions are. Lower is better. <code>0</code> is perfect, <code>0.25</code> is what you'd score by always saying 50% (i.e., random guessing), <code>1.0</code> would require being maximally wrong (saying 100% on something that didn't happen). The Knowledge Center → "The method" article explains the math.</p>
+    <p>A Brier score below <strong>0.20 over 50+ resolved predictions</strong> is genuinely good calibration.</p>
+
+    <h3>Why does the slider start at 50%?</h3>
+    <p>50% is "I have no information." Anything below 50% is the same forecast inverted ("30% yes" = "70% no" with the claim flipped). Présage standardizes on always asking "how confident in YES?" and provides a Flip button to invert the claim if you lean "no."</p>
+
+    <h3>Can I edit a resolved prediction?</h3>
+    <p>No. Resolved predictions are immutable to protect your calibration history — if you could edit them, you could rewrite your past to match your present. You can edit pending (unresolved) predictions freely.</p>
+
+    <h3>How do I delete a prediction?</h3>
+    <p>Long-press the prediction in the Predict tab → Delete. Or open the detail sheet and tap the trash icon.</p>
+
+    <h3>How do I sync across devices?</h3>
+    <p>Settings → iCloud Sync → toggle on. Sign in with Apple if prompted. <strong>Force-quit and relaunch Présage</strong> for the sync setting to take effect — the SwiftData container is built once at app launch.</p>
+    <p>Sync is off by default because resolution-fudging is easier when you can resolve on one device while another shows your original confidence — Présage is designed for honest self-reflection, and forcing local-only is a small barrier that keeps you accountable.</p>
+
+    <h3>My widget shows old data.</h3>
+    <p>Widgets refresh on their own schedule (iOS controls this, not Présage). After making a prediction, expect up to 15 minutes before the widget reflects it. If it's been longer, force-quit the main app and reopen — that triggers an immediate widget reload.</p>
+
+    <h3>My notifications stopped firing.</h3>
+    <p>Check iOS Settings → Notifications → Présage → ensure Allow Notifications is on. Then in the app: Settings → Notifications → "Enable resolution reminders" to re-prime the system permission.</p>
+    <p>If you have more than ~64 active predictions all resolving at different times, iOS's notification budget kicks in — Présage keeps the soonest-due reminders and drops the furthest-out ones.</p>
+
+    <h3>Can I export my data?</h3>
+    <p>Yes — More tab → Data &amp; Account → Markdown / Obsidian export (folder of Markdown files with YAML frontmatter and <code>[[wikilinks]]</code>) or CSV via the import view's reverse path.</p>
+
+    <h3>How do I import from another app?</h3>
+    <p>More tab → Data &amp; Account → Import from CSV. Présage parses CSV exports from Fatebook, PredictionBook, and any spreadsheet with at least a <code>claim</code> column. The importer skips malformed rows and tells you the count.</p>
+
+    <h3>Will my data be lost if I uninstall?</h3>
+    <p>Yes — uninstalling iOS apps removes their app container. Export your data first if you want to keep it.</p>
+    <p>If iCloud Sync was on, your data lives in your iCloud account and will restore when you reinstall and re-enable sync.</p>
+
+    <h3>How do I reset everything?</h3>
+    <p>Settings → Danger Zone → Reset Présage. Confirmation dialog, then it erases every prediction, snapshot, training answer, flashcard, AI score, and Spotlight index entry from this device. Onboarding restarts.</p>
+    <p>If iCloud Sync was on, the next sync propagates the deletion to your other devices.</p>
+
+    <h3>Why is the app called Présage?</h3>
+    <p>Présage is French for "an omen" or "a portent" — a forecast about what's to come. Apt for an app whose only job is making personal forecasts and then scoring them.</p>
+
+    <hr />
+
+    <h2>Bug reports</h2>
+    <p>Email <strong><a href="mailto:honorius@neogy.dev">honorius@neogy.dev</a></strong> with:</p>
+    <ol>
+      <li>iOS version (Settings → General → About → iOS Version)</li>
+      <li>Device model</li>
+      <li>Présage version (Settings → About → Version)</li>
+      <li>What you were doing when it happened</li>
+      <li>What you expected vs. what occurred</li>
+    </ol>
+    <p>Crash logs are useful but not required. Présage has no crash reporting SDK — by privacy choice — so the only way I see crashes is through TestFlight or App Store Connect.</p>
+
+    <hr />
+
+    <h2>Feature requests</h2>
+    <p>Email or open an issue at <a href="https://github.com/hneogy/Presage/issues">github.com/hneogy/Presage/issues</a>.</p>
+    <p>I read everything. Not every request fits Présage's design philosophy (no gamification, no streaks, no social pressure, all data on-device) but everything gets considered.</p>
+
+    <hr />
+
+    <h2>Privacy / security questions</h2>
+    <p>See the full <a href="/privacy">Privacy Policy</a> for what's collected (nothing) and where data lives (your device).</p>
+    <p>For sensitive security disclosures, email directly rather than opening a public issue.</p>
+
+    <hr />
+
+    <h2>Developer</h2>
+    <p><strong>Honorius M. Neogy</strong> — <a href="https://neogy.dev/">neogy.dev</a></p>
+  </article>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070D12" />
+  <title>Accessibility — Présage</title>
+  <meta name="description" content="Présage's accessibility features: VoiceOver, Dynamic Type, Reduce Motion, color contrast, haptics, RTL support, keyboard shortcuts." />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="canonical" href="https://presage.neogy.dev/accessibility" />
+</head>
+<body>
+
+  <div class="wrap">
+    <nav>
+      <a href="/" class="brand">
+        <span class="glyph"></span>
+        Présage
+      </a>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/support">Support</a>
+      </div>
+    </nav>
+  </div>
+
+  <article class="article">
+    <a href="/" class="back">Home</a>
+    <h1>Accessibility Statement</h1>
+    <p class="meta">Last updated: 2026-05-04</p>
+
+    <p>Présage is designed to be usable by everyone. This page documents the specific accessibility features supported and explains how to use them.</p>
+
+    <hr />
+
+    <h2>VoiceOver</h2>
+    <p>Every interactive element in Présage has either an explicit <code>accessibilityLabel</code> or an implicit one via SwiftUI's <code>Label</code> component. The reading order on each screen is deliberate:</p>
+    <ul>
+      <li><strong>Home tab</strong> — Brier score (the headline number) is read first, then the quick stats row, then the resolving-soon section, then the mini calibration curve.</li>
+      <li><strong>Predictions list</strong> — each row reads as: claim, confidence percentage, days until resolution.</li>
+      <li><strong>Insights</strong> — reads section by section (benchmarks, year-in-pixels, by category, by horizon, by mood, trend, wall of shame, distribution).</li>
+      <li><strong>Resolution flow</strong> — Phase 1 reads the claim and criteria but <strong>deliberately does NOT speak the original confidence percentage</strong>, even via VoiceOver — the honesty mechanic applies to assistive tech too.</li>
+    </ul>
+
+    <hr />
+
+    <h2>Confidence dial</h2>
+    <p>The custom confidence dial exposes its current value as <code>"N percent"</code> so VoiceOver users hear the current setting. Adjustment works with the standard VoiceOver rotor — swipe up/down to increment by 5% (matching the visual snap behavior).</p>
+
+    <hr />
+
+    <h2>Calibration breakdowns</h2>
+    <p>Each category / horizon / mood card uses <code>accessibilityCustomContent</code> to expose multiple data points cleanly:</p>
+    <ul>
+      <li>Category name</li>
+      <li>Brier score</li>
+      <li>Sample size</li>
+    </ul>
+    <p>VoiceOver reads the primary label by default; users can request additional content via the rotor.</p>
+
+    <hr />
+
+    <h2>Dynamic Type</h2>
+    <p>Most text scales with iOS Settings → Accessibility → Display &amp; Text Size → Larger Text. The exception:</p>
+    <ul>
+      <li><strong>Tab bar labels</strong> are capped at <code>xLarge</code> to prevent the four-tab bar from overflowing on small devices. The icons remain unambiguous regardless of label size.</li>
+    </ul>
+    <p>If any text clips at very large sizes, that's a bug — please report.</p>
+
+    <hr />
+
+    <h2>Reduce Motion</h2>
+    <p>When iOS Settings → Accessibility → Motion → Reduce Motion is enabled, Présage automatically simplifies:</p>
+    <ul>
+      <li>Score-reveal spring animations → crossfades</li>
+      <li>Tab transitions → instant</li>
+      <li>Onboarding page transitions → crossfades</li>
+    </ul>
+    <p>Underlying functionality is identical; only the animation curves change.</p>
+
+    <hr />
+
+    <h2>Color contrast</h2>
+    <p>The dark theme is the primary experience and passes <strong>WCAG AA</strong> contrast on every text-on-surface pairing:</p>
+    <ul>
+      <li><code>textPrimary (#F2EDE6)</code> on <code>surfacePrimary (#0A1218)</code> — well above AA</li>
+      <li><code>textSecondary (#8B9AA6)</code> on <code>surfaceSecondary (#101920)</code> — passes AA for body text</li>
+      <li><code>accent (#2FA8A8)</code> on <code>surfacePrimary</code> — passes AA for UI elements</li>
+    </ul>
+    <p>The light theme uses a deliberately darkened accent (<code>#B8882E</code> instead of <code>#2FA8A8</code>) specifically chosen to clear AA contrast against the cream background.</p>
+    <p>If you find a color pairing that fails AA, report it as a bug.</p>
+
+    <hr />
+
+    <h2>Differentiate Without Color</h2>
+    <p>When iOS Settings → Accessibility → Display &amp; Text Size → Differentiate Without Color is enabled:</p>
+    <ul>
+      <li>The Wall of Shame items show an <code>exclamationmark.octagon.fill</code> icon next to the claim text, in addition to the coral left border. Color alone never carries information.</li>
+      <li>Calibration overconfident / underconfident zones in charts get textured fills in addition to color.</li>
+    </ul>
+
+    <hr />
+
+    <h2>Haptics</h2>
+    <p>The confidence dial uses haptic ticks at every 5% increment, with <strong>heavier</strong> feedback at the decision boundaries (50%, 80%, 95%). Resolution outcomes have distinct haptic signatures:</p>
+    <ul>
+      <li><strong>Success</strong> — soft, ascending double-tap</li>
+      <li><strong>Failure</strong> — firmer, single thud</li>
+      <li><strong>Ambiguous</strong> — medium, even tick</li>
+    </ul>
+    <p>You can feel the resolution outcome without seeing the screen.</p>
+
+    <hr />
+
+    <h2>Right-to-left languages</h2>
+    <p>Every layout uses SwiftUI's <code>leading</code> / <code>trailing</code> alignment (not <code>left</code> / <code>right</code>), so layouts mirror automatically when device language is RTL. Charts mirror their axes appropriately.</p>
+
+    <hr />
+
+    <h2>Keyboard support (iPad)</h2>
+    <ul>
+      <li><code>Cmd+N</code> — new prediction full flow</li>
+      <li><code>Cmd+R</code> — Quick Predict</li>
+      <li><code>Esc</code> — dismiss sheets and covers</li>
+      <li><code>Tab</code> — traverses interactive elements in source order</li>
+      <li><code>Space / Return</code> — activates focused element</li>
+    </ul>
+
+    <hr />
+
+    <h2>Audio descriptions / captions</h2>
+    <p>Présage contains no audio or video media. No captions or descriptions are needed.</p>
+
+    <hr />
+
+    <h2>Voice Control</h2>
+    <p>Présage inherits VoiceOver labels for Voice Control naming. Most actions can be performed by name:</p>
+    <ul>
+      <li>"Tap New Prediction"</li>
+      <li>"Tap Resolve"</li>
+      <li>"Increment value" / "Decrement value" on the confidence dial</li>
+    </ul>
+
+    <hr />
+
+    <h2>Reporting issues</h2>
+    <p>Found something that doesn't work for you? Please email:</p>
+    <p><strong><a href="mailto:honorius@neogy.dev">honorius@neogy.dev</a></strong></p>
+    <p>Specific reports — "VoiceOver doesn't read the [thing] on the [screen]" — are most actionable.</p>
+  </article>
+
+</body>
+</html>
