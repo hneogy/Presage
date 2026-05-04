@@ -1,0 +1,7 @@
+id,timestamp,reporter,severity,category,one_line_summary,what_they_did,what_they_expected,what_actually_happened,os_version,device,build_number,fix_in,status,fix_pr,verified_by,notes
+EXAMPLE-001,2026-05-04 14:32,jane@example.com,P1,Resolution flow,"Reveal screen flickered before showing","Tapped Yes after a week","See the reveal screen with confidence","Screen flashed and dismissed before reveal","iOS 26.2","iPhone 17","1.0.0","ResolutionFlow.swift","done","#1","jane@example.com","Was the resolvingPrediction=nil bug from audit 11"
+EXAMPLE-002,2026-05-04 15:01,marcus@example.com,P3,Onboarding copy,"'You don't' line was confusing","Read the hook screen","Understand what the app does","Felt accusatory","OnboardingFlow.swift","triage",,,,
+EXAMPLE-003,2026-05-04 16:14,priya@example.com,P2,Notifications,"Day 3 push fired at 2am","Made first prediction Tuesday","Get push at reasonable hour","Got push at 2am Friday","iOS 26.1","iPhone 16","1.0.0","OnboardingPushScheduler.swift","triage",,,,
+,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,

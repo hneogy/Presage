@@ -1,0 +1,1248 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A10001 /* PariApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10001 /* PariApp.swift */; };
+		A10002 /* Prediction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002 /* Prediction.swift */; };
+		A10003 /* PredictionEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003 /* PredictionEnums.swift */; };
+		A10004 /* CalibrationSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004 /* CalibrationSnapshot.swift */; };
+		A10005 /* CalibrationTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005 /* CalibrationTypes.swift */; };
+		A10006 /* DSColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10006 /* DSColor.swift */; };
+		A10007 /* DSTypography.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10007 /* DSTypography.swift */; };
+		A10008 /* DSSpacing.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10008 /* DSSpacing.swift */; };
+		A10009 /* DSMotion.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10009 /* DSMotion.swift */; };
+		A10010 /* DSComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10010 /* DSComponents.swift */; };
+		A10011 /* PariEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10011 /* PariEngine.swift */; };
+		A10012 /* ScoringEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10012 /* ScoringEngine.swift */; };
+		A10013 /* CalibrationCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10013 /* CalibrationCache.swift */; };
+		A10014 /* QualityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10014 /* QualityChecker.swift */; };
+		A10015 /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10015 /* NotificationScheduler.swift */; };
+		A10016 /* HapticService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10016 /* HapticService.swift */; };
+		A10017 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10017 /* RootTabView.swift */; };
+		A10018 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10018 /* HomeView.swift */; };
+		A10019 /* CalibrationCurveChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10019 /* CalibrationCurveChart.swift */; };
+		A10020 /* PredictionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10020 /* PredictionListView.swift */; };
+		A10021 /* PredictionDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10021 /* PredictionDetailSheet.swift */; };
+		A10022 /* NewPredictionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10022 /* NewPredictionFlow.swift */; };
+		A10023 /* ConfidenceDial.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10023 /* ConfidenceDial.swift */; };
+		A10024 /* ResolutionFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10024 /* ResolutionFlow.swift */; };
+		A10025 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10025 /* InsightsView.swift */; };
+		A10026 /* CalibrationTrendChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10026 /* CalibrationTrendChart.swift */; };
+		A10027 /* ConfidenceDistributionChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10027 /* ConfidenceDistributionChart.swift */; };
+		A10028 /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10028 /* OnboardingFlow.swift */; };
+		A10029 /* SettingsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10029 /* SettingsSheet.swift */; };
+		A10030 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10030 /* Assets.xcassets */; };
+		A10031 /* ScoringEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10031 /* ScoringEngineTests.swift */; };
+		A10032 /* PariIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10032 /* PariIntents.swift */; };
+		A10033 /* SpotlightIndexer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10033 /* SpotlightIndexer.swift */; };
+		A10034 /* PariTips.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10034 /* PariTips.swift */; };
+		A10035 /* HapticEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10035 /* HapticEngine.swift */; };
+		A10036 /* BackgroundTaskScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10036 /* BackgroundTaskScheduler.swift */; };
+		A10037 /* WidgetReloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10037 /* WidgetReloader.swift */; };
+		A10038 /* FoundationModelsAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10038 /* FoundationModelsAssistant.swift */; };
+		A10039 /* CloudSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10039 /* CloudSyncManager.swift */; };
+		A10040 /* AppleSignInManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10040 /* AppleSignInManager.swift */; };
+		A10041 /* HealthKitMoodSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10041 /* HealthKitMoodSync.swift */; };
+		A10044 /* PariActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10044 /* PariActivityAttributes.swift */; };
+		A10045 /* CalibrationCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10045 /* CalibrationCacheTests.swift */; };
+		A10046 /* PredictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10046 /* PredictionTests.swift */; };
+		A10054 /* ClaimFlipperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10054 /* ClaimFlipperTests.swift */; };
+		A10047 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10047 /* LiveActivityManager.swift */; };
+		A10048 /* A11y.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10048 /* A11y.swift */; };
+		A10049 /* DSAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10049 /* DSAtmosphere.swift */; };
+		A10050 /* BrierScoreHero.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10050 /* BrierScoreHero.swift */; };
+		A10051 /* DSSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10051 /* DSSignature.swift */; };
+		A10052 /* ClaimFlipper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10052 /* ClaimFlipper.swift */; };
+		A10053 /* ClaimInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10053 /* ClaimInput.swift */; };
+		A10055 /* PredictionTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10055 /* PredictionTypes.swift */; };
+		A10056 /* RecurrenceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10056 /* RecurrenceEngine.swift */; };
+		A10057 /* TrainingPack.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10057 /* TrainingPack.swift */; };
+		A10058 /* CSVImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10058 /* CSVImporter.swift */; };
+		A10059 /* ShareCardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10059 /* ShareCardRenderer.swift */; };
+		A10060 /* WitnessShareService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10060 /* WitnessShareService.swift */; };
+		A10061 /* TrainingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10061 /* TrainingView.swift */; };
+		A10062 /* FlashCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10062 /* FlashCardView.swift */; };
+		A10063 /* TemplatesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10063 /* TemplatesView.swift */; };
+		A10064 /* CSVImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10064 /* CSVImportView.swift */; };
+		A10065 /* ShareCardSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10065 /* ShareCardSheet.swift */; };
+		A10066 /* MoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10066 /* MoreView.swift */; };
+		A10067 /* CorrelationEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10067 /* CorrelationEngine.swift */; };
+		A10068 /* CalendarHeatmap.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10068 /* CalendarHeatmap.swift */; };
+		A10069 /* QuickPredictSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10069 /* QuickPredictSheet.swift */; };
+		A10070 /* ConfidenceExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10070 /* ConfidenceExtractor.swift */; };
+		A10071 /* AnnualReportRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10071 /* AnnualReportRenderer.swift */; };
+		A10072 /* AnnualReportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10072 /* AnnualReportView.swift */; };
+		A10073 /* PublicMarketBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10073 /* PublicMarketBrowser.swift */; };
+		A10074 /* PublicMarketMirrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10074 /* PublicMarketMirrorView.swift */; };
+		A10075 /* AntiFeaturePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10075 /* AntiFeaturePanel.swift */; };
+		A10076 /* RecapAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10076 /* RecapAnimator.swift */; };
+		A10077 /* LeaderboardService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10077 /* LeaderboardService.swift */; };
+		A10078 /* LeaderboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10078 /* LeaderboardView.swift */; };
+		A10079 /* QuestionPackStoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10079 /* QuestionPackStoreView.swift */; };
+		A10080 /* TwinPredictionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10080 /* TwinPredictionsView.swift */; };
+		A10081 /* AIPredictionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10081 /* AIPredictionModels.swift */; };
+		A10082 /* BiasLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10082 /* BiasLibrary.swift */; };
+		A10083 /* AILLMBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10083 /* AILLMBridge.swift */; };
+		A10084 /* PariCoach.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10084 /* PariCoach.swift */; };
+		A10085 /* SundayRetrospectiveScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10085 /* SundayRetrospectiveScheduler.swift */; };
+		A10086 /* MarkdownVaultExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10086 /* MarkdownVaultExporter.swift */; };
+		A10087 /* AIScoringView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10087 /* AIScoringView.swift */; };
+		A10088 /* CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10088 /* CoachView.swift */; };
+		A10089 /* TeamsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10089 /* TeamsView.swift */; };
+		A10090 /* BiasEncyclopediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10090 /* BiasEncyclopediaView.swift */; };
+		A10091 /* LifeForecastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10091 /* LifeForecastView.swift */; };
+		A10092 /* HumanVsAIDuelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10092 /* HumanVsAIDuelView.swift */; };
+		A10093 /* MarkdownExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10093 /* MarkdownExportView.swift */; };
+		A10094 /* AIKeysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10094 /* AIKeysView.swift */; };
+		A10095 /* OnboardingPushScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10095 /* OnboardingPushScheduler.swift */; };
+		A10096 /* RegionGeofence.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10096 /* RegionGeofence.swift */; };
+		A10097 /* PariMedianBenchmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10097 /* PariMedianBenchmark.swift */; };
+		A10098 /* PariMedianBenchmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10098 /* PariMedianBenchmarkView.swift */; };
+		A10099 /* PariNotificationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10099 /* PariNotificationDelegate.swift */; };
+		A10100 /* EditPredictionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10100 /* EditPredictionSheet.swift */; };
+		A10101 /* PariFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10101 /* PariFormat.swift */; };
+		A10102 /* PariUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10102 /* PariUITests.swift */; };
+		A10103 /* PariSharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10103 /* PariSharedStore.swift */; };
+		A10104 /* PariSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10104 /* PariSchema.swift */; };
+		A10105 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = B10105 /* PrivacyInfo.xcprivacy */; };
+		A10106 /* KnowledgeCenterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10106 /* KnowledgeCenterView.swift */; };
+		W10020 /* SmartStackWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WB10020 /* SmartStackWidget.swift */; };
+		W10021 /* PariWidgetStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = WB10021 /* PariWidgetStore.swift */; };
+		W10022 /* PredictionTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10055 /* PredictionTypes.swift */; };
+		W10023 /* AIPredictionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10081 /* AIPredictionModels.swift */; };
+		EW0001 /* PresageWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = PR0003 /* PresageWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		W10001 /* PariWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = WB10001 /* PariWidgetsBundle.swift */; };
+		W10002 /* BrierScoreWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WB10002 /* BrierScoreWidget.swift */; };
+		W10003 /* DueSoonWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = WB10003 /* DueSoonWidget.swift */; };
+		W10004 /* PariLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = WB10004 /* PariLiveActivity.swift */; };
+		W10005 /* PariActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10044 /* PariActivityAttributes.swift */; };
+		W10006 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B10030 /* Assets.xcassets */; };
+		W10010 /* Prediction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10002 /* Prediction.swift */; };
+		W10011 /* PredictionEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10003 /* PredictionEnums.swift */; };
+		W10012 /* CalibrationSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10004 /* CalibrationSnapshot.swift */; };
+		W10013 /* CalibrationTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10005 /* CalibrationTypes.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C10001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P10001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T10001;
+			remoteInfo = Pari;
+		};
+		C10002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P10001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T10003;
+			remoteInfo = PariWidgets;
+		};
+		C10003 /* PBXContainerItemProxy UITests->Pari */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = P10001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T10001;
+			remoteInfo = Pari;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		EM0001 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				EW0001 /* PresageWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		B10001 /* PariApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariApp.swift; sourceTree = "<group>"; };
+		B10002 /* Prediction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prediction.swift; sourceTree = "<group>"; };
+		B10003 /* PredictionEnums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictionEnums.swift; sourceTree = "<group>"; };
+		B10004 /* CalibrationSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationSnapshot.swift; sourceTree = "<group>"; };
+		B10005 /* CalibrationTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationTypes.swift; sourceTree = "<group>"; };
+		B10006 /* DSColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSColor.swift; sourceTree = "<group>"; };
+		B10007 /* DSTypography.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSTypography.swift; sourceTree = "<group>"; };
+		B10008 /* DSSpacing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSSpacing.swift; sourceTree = "<group>"; };
+		B10009 /* DSMotion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSMotion.swift; sourceTree = "<group>"; };
+		B10010 /* DSComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSComponents.swift; sourceTree = "<group>"; };
+		B10011 /* PariEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariEngine.swift; sourceTree = "<group>"; };
+		B10012 /* ScoringEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringEngine.swift; sourceTree = "<group>"; };
+		B10013 /* CalibrationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationCache.swift; sourceTree = "<group>"; };
+		B10014 /* QualityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QualityChecker.swift; sourceTree = "<group>"; };
+		B10015 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+		B10016 /* HapticService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticService.swift; sourceTree = "<group>"; };
+		B10017 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		B10018 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		B10019 /* CalibrationCurveChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationCurveChart.swift; sourceTree = "<group>"; };
+		B10020 /* PredictionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictionListView.swift; sourceTree = "<group>"; };
+		B10021 /* PredictionDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictionDetailSheet.swift; sourceTree = "<group>"; };
+		B10022 /* NewPredictionFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPredictionFlow.swift; sourceTree = "<group>"; };
+		B10023 /* ConfidenceDial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfidenceDial.swift; sourceTree = "<group>"; };
+		B10024 /* ResolutionFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolutionFlow.swift; sourceTree = "<group>"; };
+		B10025 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		B10026 /* CalibrationTrendChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationTrendChart.swift; sourceTree = "<group>"; };
+		B10027 /* ConfidenceDistributionChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfidenceDistributionChart.swift; sourceTree = "<group>"; };
+		B10028 /* OnboardingFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlow.swift; sourceTree = "<group>"; };
+		B10029 /* SettingsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSheet.swift; sourceTree = "<group>"; };
+		B10030 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B10031 /* ScoringEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringEngineTests.swift; sourceTree = "<group>"; };
+		B10032 /* PariIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariIntents.swift; sourceTree = "<group>"; };
+		B10033 /* SpotlightIndexer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightIndexer.swift; sourceTree = "<group>"; };
+		B10034 /* PariTips.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariTips.swift; sourceTree = "<group>"; };
+		B10035 /* HapticEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticEngine.swift; sourceTree = "<group>"; };
+		B10036 /* BackgroundTaskScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskScheduler.swift; sourceTree = "<group>"; };
+		B10037 /* WidgetReloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetReloader.swift; sourceTree = "<group>"; };
+		B10038 /* FoundationModelsAssistant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationModelsAssistant.swift; sourceTree = "<group>"; };
+		B10039 /* CloudSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSyncManager.swift; sourceTree = "<group>"; };
+		B10040 /* AppleSignInManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSignInManager.swift; sourceTree = "<group>"; };
+		B10041 /* HealthKitMoodSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitMoodSync.swift; sourceTree = "<group>"; };
+		B10044 /* PariActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariActivityAttributes.swift; sourceTree = "<group>"; };
+		B10045 /* CalibrationCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationCacheTests.swift; sourceTree = "<group>"; };
+		B10046 /* PredictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictionTests.swift; sourceTree = "<group>"; };
+		B10054 /* ClaimFlipperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimFlipperTests.swift; sourceTree = "<group>"; };
+		B10047 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
+		B10048 /* A11y.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A11y.swift; sourceTree = "<group>"; };
+		B10049 /* DSAtmosphere.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSAtmosphere.swift; sourceTree = "<group>"; };
+		B10050 /* BrierScoreHero.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrierScoreHero.swift; sourceTree = "<group>"; };
+		B10051 /* DSSignature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSSignature.swift; sourceTree = "<group>"; };
+		B10052 /* ClaimFlipper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimFlipper.swift; sourceTree = "<group>"; };
+		B10053 /* ClaimInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimInput.swift; sourceTree = "<group>"; };
+		B10055 /* PredictionTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictionTypes.swift; sourceTree = "<group>"; };
+		B10056 /* RecurrenceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrenceEngine.swift; sourceTree = "<group>"; };
+		B10057 /* TrainingPack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingPack.swift; sourceTree = "<group>"; };
+		B10058 /* CSVImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImporter.swift; sourceTree = "<group>"; };
+		B10059 /* ShareCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardRenderer.swift; sourceTree = "<group>"; };
+		B10060 /* WitnessShareService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WitnessShareService.swift; sourceTree = "<group>"; };
+		B10061 /* TrainingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingView.swift; sourceTree = "<group>"; };
+		B10062 /* FlashCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlashCardView.swift; sourceTree = "<group>"; };
+		B10063 /* TemplatesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TemplatesView.swift; sourceTree = "<group>"; };
+		B10064 /* CSVImportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImportView.swift; sourceTree = "<group>"; };
+		B10065 /* ShareCardSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareCardSheet.swift; sourceTree = "<group>"; };
+		B10066 /* MoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreView.swift; sourceTree = "<group>"; };
+		G10022 /* Training */ = {isa = PBXGroup; children = (B10061 /* TrainingView.swift */, B10062 /* FlashCardView.swift */); path = Training; sourceTree = "<group>"; };
+		G10023 /* Templates */ = {isa = PBXGroup; children = (B10063 /* TemplatesView.swift */); path = Templates; sourceTree = "<group>"; };
+		G10024 /* More */ = {isa = PBXGroup; children = (B10066 /* MoreView.swift */); path = More; sourceTree = "<group>"; };
+		B10067 /* CorrelationEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationEngine.swift; sourceTree = "<group>"; };
+		B10068 /* CalendarHeatmap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarHeatmap.swift; sourceTree = "<group>"; };
+		B10069 /* QuickPredictSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickPredictSheet.swift; sourceTree = "<group>"; };
+		B10070 /* ConfidenceExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfidenceExtractor.swift; sourceTree = "<group>"; };
+		B10071 /* AnnualReportRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnualReportRenderer.swift; sourceTree = "<group>"; };
+		B10072 /* AnnualReportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnualReportView.swift; sourceTree = "<group>"; };
+		B10073 /* PublicMarketBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicMarketBrowser.swift; sourceTree = "<group>"; };
+		B10074 /* PublicMarketMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublicMarketMirrorView.swift; sourceTree = "<group>"; };
+		B10075 /* AntiFeaturePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AntiFeaturePanel.swift; sourceTree = "<group>"; };
+		B10076 /* RecapAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecapAnimator.swift; sourceTree = "<group>"; };
+		B10077 /* LeaderboardService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardService.swift; sourceTree = "<group>"; };
+		B10078 /* LeaderboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardView.swift; sourceTree = "<group>"; };
+		B10079 /* QuestionPackStoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionPackStoreView.swift; sourceTree = "<group>"; };
+		B10080 /* TwinPredictionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwinPredictionsView.swift; sourceTree = "<group>"; };
+		B10081 /* AIPredictionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIPredictionModels.swift; sourceTree = "<group>"; };
+		B10082 /* BiasLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiasLibrary.swift; sourceTree = "<group>"; };
+		B10083 /* AILLMBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AILLMBridge.swift; sourceTree = "<group>"; };
+		B10084 /* PariCoach.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariCoach.swift; sourceTree = "<group>"; };
+		B10085 /* SundayRetrospectiveScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SundayRetrospectiveScheduler.swift; sourceTree = "<group>"; };
+		B10086 /* MarkdownVaultExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownVaultExporter.swift; sourceTree = "<group>"; };
+		B10087 /* AIScoringView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIScoringView.swift; sourceTree = "<group>"; };
+		B10088 /* CoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoachView.swift; sourceTree = "<group>"; };
+		B10089 /* TeamsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsView.swift; sourceTree = "<group>"; };
+		B10090 /* BiasEncyclopediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiasEncyclopediaView.swift; sourceTree = "<group>"; };
+		B10091 /* LifeForecastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifeForecastView.swift; sourceTree = "<group>"; };
+		B10092 /* HumanVsAIDuelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumanVsAIDuelView.swift; sourceTree = "<group>"; };
+		B10093 /* MarkdownExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownExportView.swift; sourceTree = "<group>"; };
+		B10094 /* AIKeysView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIKeysView.swift; sourceTree = "<group>"; };
+		B10095 /* OnboardingPushScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPushScheduler.swift; sourceTree = "<group>"; };
+		B10096 /* RegionGeofence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionGeofence.swift; sourceTree = "<group>"; };
+		B10097 /* PariMedianBenchmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariMedianBenchmark.swift; sourceTree = "<group>"; };
+		B10098 /* PariMedianBenchmarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariMedianBenchmarkView.swift; sourceTree = "<group>"; };
+		B10099 /* PariNotificationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariNotificationDelegate.swift; sourceTree = "<group>"; };
+		B10100 /* EditPredictionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditPredictionSheet.swift; sourceTree = "<group>"; };
+		B10101 /* PariFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariFormat.swift; sourceTree = "<group>"; };
+		B10103 /* PariSharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariSharedStore.swift; sourceTree = "<group>"; };
+		B10104 /* PariSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariSchema.swift; sourceTree = "<group>"; };
+		B10105 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B10106 /* KnowledgeCenterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KnowledgeCenterView.swift; sourceTree = "<group>"; };
+		WB10020 /* SmartStackWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartStackWidget.swift; sourceTree = "<group>"; };
+		WB10021 /* PariWidgetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariWidgetStore.swift; sourceTree = "<group>"; };
+		G10031 /* AI */ = {isa = PBXGroup; children = (B10087 /* AIScoringView.swift */, B10092 /* HumanVsAIDuelView.swift */); path = AI; sourceTree = "<group>"; };
+		G10032 /* Coach */ = {isa = PBXGroup; children = (B10088 /* CoachView.swift */); path = Coach; sourceTree = "<group>"; };
+		G10033 /* TeamsViewGroup */ = {isa = PBXGroup; children = (B10089 /* TeamsView.swift */); path = Teams; sourceTree = "<group>"; };
+		G10034 /* Bias */ = {isa = PBXGroup; children = (B10090 /* BiasEncyclopediaView.swift */); path = Bias; sourceTree = "<group>"; };
+		G10035 /* LifeForecast */ = {isa = PBXGroup; children = (B10091 /* LifeForecastView.swift */); path = LifeForecast; sourceTree = "<group>"; };
+		G10036 /* Duel */ = {isa = PBXGroup; children = (B10092 /* HumanVsAIDuelView.swift */); path = Duel; sourceTree = "<group>"; };
+		G10025 /* Quick */ = {isa = PBXGroup; children = (B10069 /* QuickPredictSheet.swift */); path = Quick; sourceTree = "<group>"; };
+		G10026 /* Annual */ = {isa = PBXGroup; children = (B10072 /* AnnualReportView.swift */); path = Annual; sourceTree = "<group>"; };
+		G10027 /* Public */ = {isa = PBXGroup; children = (B10074 /* PublicMarketMirrorView.swift */); path = Public; sourceTree = "<group>"; };
+		G10028 /* Twin */ = {isa = PBXGroup; children = (B10080 /* TwinPredictionsView.swift */); path = Twin; sourceTree = "<group>"; };
+		G10029 /* Leaderboard */ = {isa = PBXGroup; children = (B10078 /* LeaderboardView.swift */); path = Leaderboard; sourceTree = "<group>"; };
+		G10030 /* QuestionPacks */ = {isa = PBXGroup; children = (B10079 /* QuestionPackStoreView.swift */); path = QuestionPacks; sourceTree = "<group>"; };
+		ENT0001 /* Pari.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Pari.entitlements; sourceTree = "<group>"; };
+		PR0001 /* Presage.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Presage.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		PR0002 /* PresageTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PresageTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		PR0003 /* PresageWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PresageWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		PR0004 /* PresageUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PresageUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10102 /* PariUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariUITests.swift; sourceTree = "<group>"; };
+		G10037 /* PariUITests */ = {isa = PBXGroup; children = (B10102 /* PariUITests.swift */); path = PresageUITests; sourceTree = "<group>"; };
+		WB10001 /* PariWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariWidgetsBundle.swift; sourceTree = "<group>"; };
+		WB10002 /* BrierScoreWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrierScoreWidget.swift; sourceTree = "<group>"; };
+		WB10003 /* DueSoonWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DueSoonWidget.swift; sourceTree = "<group>"; };
+		WB10004 /* PariLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PariLiveActivity.swift; sourceTree = "<group>"; };
+		WB10005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		WB10006 /* PariWidgets.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PariWidgets.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F10001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F10002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F10003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F10004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		G10001 = {
+			isa = PBXGroup;
+			children = (
+				G10002 /* Pari */,
+				G10017 /* PariWidgets */,
+				G10015 /* PariTests */,
+				G10037 /* PariUITests */,
+				G10016 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		G10002 /* Pari */ = {
+			isa = PBXGroup;
+			children = (
+				B10001 /* PariApp.swift */,
+				ENT0001 /* Pari.entitlements */,
+				G10003 /* Models */,
+				G10004 /* DesignSystem */,
+				G10005 /* Services */,
+				G10006 /* Views */,
+				G10018 /* Intents */,
+				G10019 /* Integrations */,
+				G10020 /* LiveActivity */,
+				G10021 /* Accessibility */,
+				B10030 /* Assets.xcassets */,
+				B10105 /* PrivacyInfo.xcprivacy */,
+			);
+			path = Presage;
+			sourceTree = "<group>";
+		};
+		G10003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				B10002 /* Prediction.swift */,
+				B10003 /* PredictionEnums.swift */,
+				B10004 /* CalibrationSnapshot.swift */,
+				B10005 /* CalibrationTypes.swift */,
+				B10055 /* PredictionTypes.swift */,
+				B10081 /* AIPredictionModels.swift */,
+				B10104 /* PariSchema.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		G10004 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				B10006 /* DSColor.swift */,
+				B10007 /* DSTypography.swift */,
+				B10008 /* DSSpacing.swift */,
+				B10009 /* DSMotion.swift */,
+				B10010 /* DSComponents.swift */,
+				B10049 /* DSAtmosphere.swift */,
+				B10051 /* DSSignature.swift */,
+				B10053 /* ClaimInput.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		G10005 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				B10011 /* PariEngine.swift */,
+				B10012 /* ScoringEngine.swift */,
+				B10013 /* CalibrationCache.swift */,
+				B10014 /* QualityChecker.swift */,
+				B10015 /* NotificationScheduler.swift */,
+				B10016 /* HapticService.swift */,
+				B10035 /* HapticEngine.swift */,
+				B10052 /* ClaimFlipper.swift */,
+				B10056 /* RecurrenceEngine.swift */,
+				B10057 /* TrainingPack.swift */,
+				B10058 /* CSVImporter.swift */,
+				B10059 /* ShareCardRenderer.swift */,
+				B10060 /* WitnessShareService.swift */,
+				B10067 /* CorrelationEngine.swift */,
+				B10070 /* ConfidenceExtractor.swift */,
+				B10071 /* AnnualReportRenderer.swift */,
+				B10073 /* PublicMarketBrowser.swift */,
+				B10076 /* RecapAnimator.swift */,
+				B10077 /* LeaderboardService.swift */,
+				B10082 /* BiasLibrary.swift */,
+				B10083 /* AILLMBridge.swift */,
+				B10084 /* PariCoach.swift */,
+				B10085 /* SundayRetrospectiveScheduler.swift */,
+				B10086 /* MarkdownVaultExporter.swift */,
+				B10095 /* OnboardingPushScheduler.swift */,
+				B10096 /* RegionGeofence.swift */,
+				B10097 /* PariMedianBenchmark.swift */,
+				B10099 /* PariNotificationDelegate.swift */,
+				B10101 /* PariFormat.swift */,
+				B10103 /* PariSharedStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		G10006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B10017 /* RootTabView.swift */,
+				G10007 /* Home */,
+				G10008 /* Predict */,
+				G10009 /* Resolution */,
+				G10010 /* Insights */,
+				G10011 /* Onboarding */,
+				G10012 /* Settings */,
+				G10022 /* Training */,
+				G10023 /* Templates */,
+				G10024 /* More */,
+				G10025 /* Quick */,
+				G10026 /* Annual */,
+				G10027 /* Public */,
+				G10028 /* Twin */,
+				G10029 /* Leaderboard */,
+				G10030 /* QuestionPacks */,
+				G10031 /* AI */,
+				G10032 /* Coach */,
+				G10033 /* TeamsViewGroup */,
+				G10034 /* Bias */,
+				G10035 /* LifeForecast */,
+				G10038 /* Knowledge */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		G10038 /* Knowledge */ = {isa = PBXGroup; children = (B10106 /* KnowledgeCenterView.swift */); path = Knowledge; sourceTree = "<group>"; };
+		G10007 /* Home */ = {
+			isa = PBXGroup;
+			children = (
+				B10018 /* HomeView.swift */,
+				B10019 /* CalibrationCurveChart.swift */,
+				B10050 /* BrierScoreHero.swift */,
+			);
+			path = Home;
+			sourceTree = "<group>";
+		};
+		G10008 /* Predict */ = {
+			isa = PBXGroup;
+			children = (
+				B10020 /* PredictionListView.swift */,
+				B10021 /* PredictionDetailSheet.swift */,
+				B10022 /* NewPredictionFlow.swift */,
+				B10023 /* ConfidenceDial.swift */,
+				B10100 /* EditPredictionSheet.swift */,
+			);
+			path = Predict;
+			sourceTree = "<group>";
+		};
+		G10009 /* Resolution */ = {
+			isa = PBXGroup;
+			children = (
+				B10024 /* ResolutionFlow.swift */,
+				B10065 /* ShareCardSheet.swift */,
+			);
+			path = Resolution;
+			sourceTree = "<group>";
+		};
+		G10010 /* Insights */ = {
+			isa = PBXGroup;
+			children = (
+				B10025 /* InsightsView.swift */,
+				B10026 /* CalibrationTrendChart.swift */,
+				B10027 /* ConfidenceDistributionChart.swift */,
+				B10068 /* CalendarHeatmap.swift */,
+				B10098 /* PariMedianBenchmarkView.swift */,
+			);
+			path = Insights;
+			sourceTree = "<group>";
+		};
+		G10011 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				B10028 /* OnboardingFlow.swift */,
+				B10075 /* AntiFeaturePanel.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		G10012 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B10029 /* SettingsSheet.swift */,
+				B10064 /* CSVImportView.swift */,
+				B10093 /* MarkdownExportView.swift */,
+				B10094 /* AIKeysView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		G10015 /* PariTests */ = {
+			isa = PBXGroup;
+			children = (
+				B10031 /* ScoringEngineTests.swift */,
+				B10045 /* CalibrationCacheTests.swift */,
+				B10046 /* PredictionTests.swift */,
+				B10054 /* ClaimFlipperTests.swift */,
+			);
+			path = PresageTests;
+			sourceTree = "<group>";
+		};
+		G10016 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				PR0001 /* Presage.app */,
+				PR0002 /* PresageTests.xctest */,
+				PR0003 /* PresageWidgets.appex */,
+				PR0004 /* PresageUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		G10017 /* PariWidgets */ = {
+			isa = PBXGroup;
+			children = (
+				WB10001 /* PariWidgetsBundle.swift */,
+				WB10002 /* BrierScoreWidget.swift */,
+				WB10003 /* DueSoonWidget.swift */,
+				WB10004 /* PariLiveActivity.swift */,
+				WB10020 /* SmartStackWidget.swift */,
+				WB10021 /* PariWidgetStore.swift */,
+				WB10005 /* Info.plist */,
+				WB10006 /* PariWidgets.entitlements */,
+			);
+			path = PresageWidgets;
+			sourceTree = "<group>";
+		};
+		G10018 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				B10032 /* PariIntents.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		G10019 /* Integrations */ = {
+			isa = PBXGroup;
+			children = (
+				B10033 /* SpotlightIndexer.swift */,
+				B10034 /* PariTips.swift */,
+				B10036 /* BackgroundTaskScheduler.swift */,
+				B10037 /* WidgetReloader.swift */,
+				B10038 /* FoundationModelsAssistant.swift */,
+				B10039 /* CloudSyncManager.swift */,
+				B10040 /* AppleSignInManager.swift */,
+				B10041 /* HealthKitMoodSync.swift */,
+			);
+			path = Integrations;
+			sourceTree = "<group>";
+		};
+		G10020 /* LiveActivity */ = {
+			isa = PBXGroup;
+			children = (
+				B10044 /* PariActivityAttributes.swift */,
+				B10047 /* LiveActivityManager.swift */,
+			);
+			path = LiveActivity;
+			sourceTree = "<group>";
+		};
+		G10021 /* Accessibility */ = {
+			isa = PBXGroup;
+			children = (
+				B10048 /* A11y.swift */,
+			);
+			path = Accessibility;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		T10001 /* Presage */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = X10003 /* Build configuration list for PBXNativeTarget "Presage" */;
+			buildPhases = (
+				S10001 /* Sources */,
+				F10001 /* Frameworks */,
+				R10001 /* Resources */,
+				EM0001 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D10002 /* PBXTargetDependency */,
+			);
+			name = Presage;
+			productName = Presage;
+			productReference = PR0001 /* Presage.app */;
+			productType = "com.apple.product-type.application";
+		};
+		T10002 /* PresageTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = X10006 /* Build configuration list for PBXNativeTarget "PresageTests" */;
+			buildPhases = (
+				S10002 /* Sources */,
+				F10002 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D10001 /* PBXTargetDependency */,
+			);
+			name = PresageTests;
+			productName = PresageTests;
+			productReference = PR0002 /* PresageTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		T10003 /* PresageWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = X10009 /* Build configuration list for PBXNativeTarget "PresageWidgets" */;
+			buildPhases = (
+				S10003 /* Sources */,
+				F10003 /* Frameworks */,
+				R10002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PresageWidgets;
+			productName = PresageWidgets;
+			productReference = PR0003 /* PresageWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		T10004 /* PresageUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = X10014 /* Build configuration list for PBXNativeTarget "PresageUITests" */;
+			buildPhases = (
+				S10004 /* Sources */,
+				F10004 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D10003 /* PBXTargetDependency UITests->Pari */,
+			);
+			name = PresageUITests;
+			productName = PresageUITests;
+			productReference = PR0004 /* PresageUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		P10001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 2630;
+				TargetAttributes = {
+					T10001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					T10002 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = T10001;
+					};
+					T10003 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					T10004 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = T10001;
+					};
+				};
+			};
+			buildConfigurationList = X10001 /* Build configuration list for PBXProject "Pari" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = G10001;
+			productRefGroup = G10016 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				T10001 /* Presage */,
+				T10002 /* PresageTests */,
+				T10003 /* PresageWidgets */,
+				T10004 /* PresageUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		R10001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10030 /* Assets.xcassets in Resources */,
+				A10105 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		R10002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W10006 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		S10001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10001 /* PariApp.swift in Sources */,
+				A10002 /* Prediction.swift in Sources */,
+				A10003 /* PredictionEnums.swift in Sources */,
+				A10004 /* CalibrationSnapshot.swift in Sources */,
+				A10005 /* CalibrationTypes.swift in Sources */,
+				A10006 /* DSColor.swift in Sources */,
+				A10007 /* DSTypography.swift in Sources */,
+				A10008 /* DSSpacing.swift in Sources */,
+				A10009 /* DSMotion.swift in Sources */,
+				A10010 /* DSComponents.swift in Sources */,
+				A10011 /* PariEngine.swift in Sources */,
+				A10012 /* ScoringEngine.swift in Sources */,
+				A10013 /* CalibrationCache.swift in Sources */,
+				A10014 /* QualityChecker.swift in Sources */,
+				A10015 /* NotificationScheduler.swift in Sources */,
+				A10016 /* HapticService.swift in Sources */,
+				A10017 /* RootTabView.swift in Sources */,
+				A10018 /* HomeView.swift in Sources */,
+				A10019 /* CalibrationCurveChart.swift in Sources */,
+				A10020 /* PredictionListView.swift in Sources */,
+				A10021 /* PredictionDetailSheet.swift in Sources */,
+				A10022 /* NewPredictionFlow.swift in Sources */,
+				A10023 /* ConfidenceDial.swift in Sources */,
+				A10024 /* ResolutionFlow.swift in Sources */,
+				A10025 /* InsightsView.swift in Sources */,
+				A10026 /* CalibrationTrendChart.swift in Sources */,
+				A10027 /* ConfidenceDistributionChart.swift in Sources */,
+				A10028 /* OnboardingFlow.swift in Sources */,
+				A10029 /* SettingsSheet.swift in Sources */,
+				A10032 /* PariIntents.swift in Sources */,
+				A10033 /* SpotlightIndexer.swift in Sources */,
+				A10034 /* PariTips.swift in Sources */,
+				A10035 /* HapticEngine.swift in Sources */,
+				A10036 /* BackgroundTaskScheduler.swift in Sources */,
+				A10037 /* WidgetReloader.swift in Sources */,
+				A10038 /* FoundationModelsAssistant.swift in Sources */,
+				A10039 /* CloudSyncManager.swift in Sources */,
+				A10040 /* AppleSignInManager.swift in Sources */,
+				A10041 /* HealthKitMoodSync.swift in Sources */,
+				A10044 /* PariActivityAttributes.swift in Sources */,
+				A10047 /* LiveActivityManager.swift in Sources */,
+				A10048 /* A11y.swift in Sources */,
+				A10049 /* DSAtmosphere.swift in Sources */,
+				A10050 /* BrierScoreHero.swift in Sources */,
+				A10051 /* DSSignature.swift in Sources */,
+				A10052 /* ClaimFlipper.swift in Sources */,
+				A10053 /* ClaimInput.swift in Sources */,
+				A10055 /* PredictionTypes.swift in Sources */,
+				A10056 /* RecurrenceEngine.swift in Sources */,
+				A10057 /* TrainingPack.swift in Sources */,
+				A10058 /* CSVImporter.swift in Sources */,
+				A10059 /* ShareCardRenderer.swift in Sources */,
+				A10060 /* WitnessShareService.swift in Sources */,
+				A10061 /* TrainingView.swift in Sources */,
+				A10062 /* FlashCardView.swift in Sources */,
+				A10063 /* TemplatesView.swift in Sources */,
+				A10064 /* CSVImportView.swift in Sources */,
+				A10065 /* ShareCardSheet.swift in Sources */,
+				A10066 /* MoreView.swift in Sources */,
+				A10067 /* CorrelationEngine.swift in Sources */,
+				A10068 /* CalendarHeatmap.swift in Sources */,
+				A10069 /* QuickPredictSheet.swift in Sources */,
+				A10070 /* ConfidenceExtractor.swift in Sources */,
+				A10071 /* AnnualReportRenderer.swift in Sources */,
+				A10072 /* AnnualReportView.swift in Sources */,
+				A10073 /* PublicMarketBrowser.swift in Sources */,
+				A10074 /* PublicMarketMirrorView.swift in Sources */,
+				A10075 /* AntiFeaturePanel.swift in Sources */,
+				A10076 /* RecapAnimator.swift in Sources */,
+				A10077 /* LeaderboardService.swift in Sources */,
+				A10078 /* LeaderboardView.swift in Sources */,
+				A10079 /* QuestionPackStoreView.swift in Sources */,
+				A10080 /* TwinPredictionsView.swift in Sources */,
+				A10081 /* AIPredictionModels.swift in Sources */,
+				A10082 /* BiasLibrary.swift in Sources */,
+				A10083 /* AILLMBridge.swift in Sources */,
+				A10084 /* PariCoach.swift in Sources */,
+				A10085 /* SundayRetrospectiveScheduler.swift in Sources */,
+				A10086 /* MarkdownVaultExporter.swift in Sources */,
+				A10087 /* AIScoringView.swift in Sources */,
+				A10088 /* CoachView.swift in Sources */,
+				A10089 /* TeamsView.swift in Sources */,
+				A10090 /* BiasEncyclopediaView.swift in Sources */,
+				A10091 /* LifeForecastView.swift in Sources */,
+				A10092 /* HumanVsAIDuelView.swift in Sources */,
+				A10093 /* MarkdownExportView.swift in Sources */,
+				A10094 /* AIKeysView.swift in Sources */,
+				A10095 /* OnboardingPushScheduler.swift in Sources */,
+				A10096 /* RegionGeofence.swift in Sources */,
+				A10097 /* PariMedianBenchmark.swift in Sources */,
+				A10098 /* PariMedianBenchmarkView.swift in Sources */,
+				A10099 /* PariNotificationDelegate.swift in Sources */,
+				A10100 /* EditPredictionSheet.swift in Sources */,
+				A10101 /* PariFormat.swift in Sources */,
+				A10103 /* PariSharedStore.swift in Sources */,
+				A10104 /* PariSchema.swift in Sources */,
+				A10106 /* KnowledgeCenterView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		S10002 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10031 /* ScoringEngineTests.swift in Sources */,
+				A10045 /* CalibrationCacheTests.swift in Sources */,
+				A10046 /* PredictionTests.swift in Sources */,
+				A10054 /* ClaimFlipperTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		S10003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W10001 /* PariWidgetsBundle.swift in Sources */,
+				W10002 /* BrierScoreWidget.swift in Sources */,
+				W10003 /* DueSoonWidget.swift in Sources */,
+				W10004 /* PariLiveActivity.swift in Sources */,
+				W10005 /* PariActivityAttributes.swift in Sources */,
+				W10010 /* Prediction.swift in Sources */,
+				W10011 /* PredictionEnums.swift in Sources */,
+				W10012 /* CalibrationSnapshot.swift in Sources */,
+				W10013 /* CalibrationTypes.swift in Sources */,
+				W10020 /* SmartStackWidget.swift in Sources */,
+				W10021 /* PariWidgetStore.swift in Sources */,
+				W10022 /* PredictionTypes.swift in Sources */,
+				W10023 /* AIPredictionModels.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		S10004 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10102 /* PariUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D10001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T10001 /* Presage */;
+			targetProxy = C10001 /* PBXContainerItemProxy */;
+		};
+		D10002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T10003 /* PresageWidgets */;
+			targetProxy = C10002 /* PBXContainerItemProxy */;
+		};
+		D10003 /* PBXTargetDependency UITests->Pari */ = {
+			isa = PBXTargetDependency;
+			target = T10001 /* Presage */;
+			targetProxy = C10003 /* PBXContainerItemProxy UITests->Pari */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		X10002 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3S6TFNM575;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		X10002R /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3S6TFNM575;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		X10004 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = accentPrimary;
+				CODE_SIGN_ENTITLEMENTS = Presage/Pari.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Presage/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		X10005 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = accentPrimary;
+				CODE_SIGN_ENTITLEMENTS = Presage/Pari.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Presage/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		X10007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy.PariTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pari.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Pari";
+			};
+			name = Debug;
+		};
+		X10008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy.PariTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pari.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Pari";
+			};
+			name = Release;
+		};
+		X10010 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = accentPrimary;
+				CODE_SIGN_ENTITLEMENTS = PresageWidgets/PariWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PresageWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Pari Widgets";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy.PariWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		X10011 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = accentPrimary;
+				CODE_SIGN_ENTITLEMENTS = PresageWidgets/PariWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PresageWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Pari Widgets";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy.PariWidgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		X10015 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy.PariUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Pari;
+			};
+			name = Debug;
+		};
+		X10016 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pari.neogy.PariUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Pari;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		X10001 /* Build configuration list for PBXProject "Pari" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				X10002 /* Debug */,
+				X10002R /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		X10003 /* Build configuration list for PBXNativeTarget "Presage" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				X10004 /* Debug */,
+				X10005 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		X10006 /* Build configuration list for PBXNativeTarget "PresageTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				X10007 /* Debug */,
+				X10008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		X10009 /* Build configuration list for PBXNativeTarget "PresageWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				X10010 /* Debug */,
+				X10011 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		X10014 /* Build configuration list for PBXNativeTarget "PresageUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				X10015 /* Debug */,
+				X10016 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = P10001 /* Project object */;
+}

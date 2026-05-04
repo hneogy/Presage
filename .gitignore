@@ -1,0 +1,53 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+project.xcworkspace/xcuserdata/
+
+# Xcode build output
+build/
+DerivedData/
+*.xcarchive
+*.ipa
+*.dSYM
+*.dSYM.zip
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+*.xcodeproj/Package.resolved
+
+# CocoaPods (not used, but excluded defensively)
+Pods/
+
+# Carthage (not used, defensive)
+Carthage/Build/
+
+# Provisioning + signing
+*.mobileprovision
+*.p12
+*.cer
+
+# Local secrets
+.env
+.env.*
+*.local
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs
+*.log
