@@ -3,20 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#070D12" />
+  <meta name="theme-color" content="#060B10" />
   <title>Présage — Personal calibrated forecasting</title>
 
   <meta name="description" content="Most people think they're right 90% of the time. They're right 70%. Présage measures the gap — a private, on-device iOS app for calibrated forecasting." />
   <meta name="author" content="Honorius M. Neogy" />
 
-  <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Présage — Personal calibrated forecasting" />
-  <meta property="og:description" content="Predict things about your life with a confidence percentage. Présage scores you with proper scoring rules and shows you the gap between confidence and reality. Private, on-device, free." />
+  <meta property="og:description" content="Predict things about your life with a confidence percentage. Présage scores you with proper scoring rules and shows you the gap between confidence and reality." />
   <meta property="og:url" content="https://presage.neogy.dev/" />
   <meta property="og:site_name" content="Présage" />
-
-  <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Présage — Personal calibrated forecasting" />
   <meta name="twitter:description" content="See the gap between what you said and what happened. Free, on-device iOS app." />
@@ -26,93 +23,275 @@
 </head>
 <body>
 
+  <div class="scroll-progress" id="scrollProgress"></div>
+
   <div class="wrap">
-    <nav>
+    <nav id="nav">
       <a href="/" class="brand">
         <span class="glyph"></span>
         Présage
       </a>
       <div class="links">
-        <a href="#mechanic">Method</a>
+        <a href="#demo">Try it</a>
         <a href="#features">Features</a>
         <a href="#privacy">Privacy</a>
         <a href="/support">Support</a>
       </div>
     </nav>
 
-    <!-- HERO -->
+    <!-- ============================================
+         HERO
+         ============================================ -->
     <section class="hero">
-      <span class="badge">Personal calibrated forecasting · iOS</span>
+      <!-- Background calibration curve that draws itself -->
+      <svg class="hero-bg-curve" viewBox="0 0 800 500" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#2FA8A8" stop-opacity="0" />
+            <stop offset="50%" stop-color="#3FCFCF" stop-opacity="0.7" />
+            <stop offset="100%" stop-color="#2FA8A8" stop-opacity="0.2" />
+          </linearGradient>
+          <linearGradient id="diagGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#4A5A66" stop-opacity="0.3" />
+            <stop offset="100%" stop-color="#4A5A66" stop-opacity="0.1" />
+          </linearGradient>
+        </defs>
+        <!-- Perfect calibration diagonal -->
+        <line x1="80" y1="420" x2="720" y2="80" stroke="url(#diagGrad)" stroke-width="1.5" stroke-dasharray="4 6" />
+        <!-- The user's curve — slightly overconfident, drawn animated -->
+        <path
+          id="userCurve"
+          d="M80,420 C200,400 280,330 380,260 C460,200 540,130 720,90"
+          stroke="url(#curveGrad)"
+          stroke-width="3"
+          fill="none"
+          stroke-linecap="round"
+          stroke-dasharray="2000"
+          stroke-dashoffset="2000"
+        />
+        <!-- Dots along the curve representing predictions -->
+        <g id="dotGroup"></g>
+      </svg>
+
+      <span class="badge">
+        <span class="dot"></span>
+        Personal calibrated forecasting · iOS
+      </span>
+
       <h1>
-        How right are you,<br />
-        <span class="accent">really?</span>
+        <span class="word" style="animation-delay: 80ms">How</span>
+        <span class="word" style="animation-delay: 160ms">right</span>
+        <span class="word" style="animation-delay: 240ms">are</span>
+        <span class="word" style="animation-delay: 320ms">you,</span>
+        <br />
+        <span class="word accent" style="animation-delay: 480ms">really?</span>
       </h1>
+
       <p class="lede">
         Predict things about your life with a confidence percentage. When the date comes, answer honestly. Présage scores you using proper scoring rules and shows you the gap between what you said and what happened.
       </p>
+
       <div class="cta-row">
-        <a href="#" class="cta cta-primary" id="appstore-btn" aria-label="Download on the App Store">
+        <a href="#" class="cta cta-primary" id="appstore-btn" data-magnetic>
           <svg width="18" height="20" viewBox="0 0 18 20" fill="currentColor"><path d="M14.94 10.46c-.02-2.03 1.66-3.01 1.74-3.06-.95-1.39-2.43-1.58-2.95-1.6-1.25-.13-2.45.74-3.09.74-.65 0-1.62-.72-2.67-.7-1.37.02-2.65.81-3.36 2.04-1.45 2.5-.37 6.2 1.03 8.23.69.99 1.5 2.1 2.55 2.06 1.03-.04 1.42-.66 2.66-.66 1.24 0 1.59.66 2.67.64 1.1-.02 1.8-1 2.47-2 .78-1.14 1.1-2.26 1.12-2.32-.02-.01-2.15-.83-2.17-3.27zM12.85 4.36c.57-.7.96-1.66.85-2.62-.83.04-1.83.55-2.42 1.24-.53.61-.99 1.59-.87 2.53.92.07 1.87-.46 2.44-1.15z"/></svg>
           Download on the App Store
         </a>
-        <a href="#mechanic" class="cta cta-secondary">See how it works</a>
+        <a href="#demo" class="cta cta-secondary" data-magnetic>Try it right here →</a>
+      </div>
+
+      <div class="scroll-cue" aria-hidden="true">
+        <span>Scroll</span>
+        <span class="line"></span>
       </div>
     </section>
 
-    <!-- HOOK -->
+    <!-- ============================================
+         HOOK — animated counter
+         ============================================ -->
     <section class="hook" id="hook">
-      <div class="stat-row">
-        <div class="stat">
-          <div class="num">90%</div>
-          <div class="label">What you think you're right about</div>
+      <div class="reveal">
+        <div class="stat-row">
+          <div class="stat">
+            <div class="num" data-counter data-target="90" data-suffix="%">0%</div>
+            <div class="label">What you think you're right about</div>
+          </div>
+          <svg class="gap-arc" viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <path
+              id="gapPath"
+              d="M 14 50 Q 50 5, 86 50"
+              stroke="#4A5A66"
+              stroke-width="2"
+              stroke-dasharray="200"
+              stroke-dashoffset="200"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <path d="M 78 42 L 86 50 L 78 58" stroke="#4A5A66" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" id="gapArrow" style="opacity:0; transition: opacity 400ms 1200ms" />
+          </svg>
+          <div class="stat">
+            <div class="num" data-counter data-target="70" data-suffix="%">0%</div>
+            <div class="label">How often you're actually right</div>
+          </div>
         </div>
-        <div class="gap">→</div>
-        <div class="stat">
-          <div class="num">70%</div>
-          <div class="label">How often you're actually right</div>
-        </div>
+        <p class="caption">
+          The difference is overconfidence — and you can't fix it without measuring it. <strong>Présage measures the gap.</strong>
+        </p>
       </div>
-      <p class="caption">
-        The difference is overconfidence — and you can't fix it without measuring it. <strong>Présage measures the gap.</strong>
-      </p>
     </section>
 
-    <!-- HONESTY MECHANIC -->
-    <section class="mechanic" id="mechanic">
-      <h2>The honesty mechanic</h2>
-      <p class="lede">
-        When a prediction resolves, Présage hides your original confidence and asks you Yes / No / Ambiguous first. Only after you answer does it reveal what you said. This deliberate friction prevents the most common form of self-deception: anchoring on your past confidence and finding ways to call yourself "basically right."
-      </p>
+    <!-- ============================================
+         INTERACTIVE DEMO — make a prediction
+         ============================================ -->
+    <section class="demo" id="demo">
+      <div class="reveal">
+        <h2>Try the honesty mechanic</h2>
+        <p class="section-lede">
+          Make a real prediction below. Watch what happens when you answer — your confidence stays hidden until you commit. This is the difference between forecasting and rationalization.
+        </p>
+      </div>
 
-      <div class="mechanic-flow">
+      <div class="demo-card reveal">
+        <!-- Step 1: Predict -->
+        <div class="demo-step active" data-step="1">
+          <div class="step-label">
+            Step 1 · Predict
+            <span class="step-dots">
+              <span class="on"></span><span></span><span></span>
+            </span>
+          </div>
+          <h3>What do you predict?</h3>
+
+          <div class="field">
+            <label for="claim">Your claim</label>
+            <input type="text" id="claim" placeholder="I'll finish the book by Friday" maxlength="100" />
+            <div class="helper">A specific event with an observable outcome.</div>
+          </div>
+
+          <div class="field">
+            <label>How confident are you?</label>
+            <div class="conf-display">
+              <span class="pct" id="confPct">70%</span>
+              <span class="qual" id="confQual">Likely</span>
+            </div>
+            <div class="conf-track">
+              <div class="fill" id="confFill" style="width: 40%"></div>
+              <input type="range" id="confSlider" min="50" max="99" step="5" value="70" />
+            </div>
+            <div class="conf-marks">
+              <span>50%</span><span>60%</span><span>70%</span><span>80%</span><span>90%</span><span>99%</span>
+            </div>
+          </div>
+
+          <button class="submit" id="step1Submit">Lock in this prediction</button>
+        </div>
+
+        <!-- Step 2: Resolve (confidence hidden) -->
+        <div class="demo-step" data-step="2">
+          <div class="step-label">
+            Step 2 · Resolve
+            <span class="step-dots">
+              <span class="on"></span><span class="on"></span><span></span>
+            </span>
+          </div>
+          <h3 id="claimEcho">Did "<span></span>" happen?</h3>
+
+          <div class="field" style="display:flex; align-items:center; gap:12px; margin-bottom: 8px;">
+            <span style="font-size: 12px; color: var(--text-2)">Your original confidence:</span>
+            <span class="hidden-pill" id="hiddenConf">▮▮▮▮▮</span>
+          </div>
+          <div class="helper">Hidden by design. You answer based on what happened, not what you predicted.</div>
+
+          <div class="outcome-row">
+            <button class="outcome-btn" data-outcome="yes">
+              <span class="label-strong">Yes</span>
+              <span class="label-sub">It happened</span>
+            </button>
+            <button class="outcome-btn" data-outcome="no">
+              <span class="label-strong">No</span>
+              <span class="label-sub">It didn't</span>
+            </button>
+            <button class="outcome-btn" data-outcome="ambiguous">
+              <span class="label-strong">Ambiguous</span>
+              <span class="label-sub">Unclear</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 3: Reveal -->
+        <div class="demo-step" data-step="3">
+          <div class="step-label">
+            Step 3 · Reveal
+            <span class="step-dots">
+              <span class="on"></span><span class="on"></span><span class="on"></span>
+            </span>
+          </div>
+
+          <div class="reveal-card">
+            <span class="badge-result" id="resultBadge"></span>
+
+            <div class="reveal-grid">
+              <div class="reveal-cell you">
+                <div class="lbl">You said</div>
+                <div class="val" id="revealConf">—</div>
+              </div>
+              <div class="reveal-cell reality">
+                <div class="lbl">Reality</div>
+                <div class="val" id="revealOutcome">—</div>
+              </div>
+            </div>
+
+            <div class="brier-impact" id="brierImpact"></div>
+
+            <button class="restart" id="restartDemo">Try another prediction</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         HONESTY MECHANIC — three phase cards
+         ============================================ -->
+    <section class="mechanic" id="mechanic">
+      <div class="reveal">
+        <h2>Why hiding works</h2>
+        <p class="lede">
+          Most "forecasting" tools let you see your old number when you grade yourself. That's not forecasting — that's storytelling. Présage forces a clean separation: commit, wait, answer, only then learn.
+        </p>
+      </div>
+
+      <div class="mechanic-flow reveal-stagger">
         <div class="phase-card">
-          <div class="step">Step 1 · Predict</div>
-          <h3>"I'll finish the book by Friday."</h3>
-          <p>You commit to a claim, a confidence percentage, and a resolution date. Confidence ranges 50–99% — anything below 50% is the same forecast inverted, so flip the claim instead.</p>
+          <div class="step">Commit</div>
+          <h3>The forecast is locked.</h3>
+          <p>Your claim, your confidence, and your resolution criteria are timestamped. You can edit until resolution day, but the history is preserved.</p>
         </div>
 
         <div class="phase-card hidden-confidence">
-          <div class="step">Step 2 · Resolve</div>
-          <h3>"Did it happen?" <span class="blur-bar">73%</span></h3>
-          <p>Your confidence is hidden. You answer Yes, No, or Ambiguous based only on what actually happened — not on what you wanted to have happened.</p>
+          <div class="step">Hide</div>
+          <h3>Your number disappears. <span class="blur-bar">XX%</span></h3>
+          <p>At resolution, your past confidence is hidden. You answer based only on what's observable in reality — not on what would make you look smart.</p>
         </div>
 
         <div class="phase-card">
-          <div class="step">Step 3 · Reveal</div>
-          <h3>"You said 73% — and you were right."</h3>
-          <p>Now you see the score. Brier score updates, calibration curve shifts, your category and horizon breakdowns all recalculate. Over time, the gap between confidence and reality narrows.</p>
+          <div class="step">Reveal</div>
+          <h3>The score lands.</h3>
+          <p>Now you see what you said. The Brier score updates, the calibration curve shifts, the breakdowns by category and horizon recalculate. The gap closes — or it doesn't.</p>
         </div>
       </div>
     </section>
 
-    <!-- FEATURES -->
+    <!-- ============================================
+         FEATURES
+         ============================================ -->
     <section class="features" id="features">
-      <h2>Everything in the box</h2>
-      <p class="lede">
-        Calibration is the headline. Underneath, Présage is one of the most complete personal forecasting tools shipped — every feature designed to keep you honest, never to keep you addicted.
-      </p>
+      <div class="reveal">
+        <h2>Everything in the box</h2>
+        <p class="lede">
+          Calibration is the headline. Underneath, Présage is one of the most complete personal forecasting tools shipped — every feature designed to keep you honest, never to keep you addicted.
+        </p>
+      </div>
 
-      <div class="feature-grid">
+      <div class="feature-grid reveal-stagger">
         <div class="feature">
           <div class="icon">📐</div>
           <h3>Brier &amp; log scores</h3>
@@ -161,15 +340,87 @@
       </div>
     </section>
 
-    <!-- PRIVACY -->
+    <!-- ============================================
+         INTERACTIVE BRIER CALCULATOR
+         ============================================ -->
+    <section class="math">
+      <div class="reveal">
+        <h2>Try the math</h2>
+        <p class="lede">
+          Brier score is a proper scoring rule. You can't game it — saying 70% when you really think 90% will hurt your score. That's what makes calibration measurable. Slide and toggle below.
+        </p>
+      </div>
+
+      <div class="brier-calc reveal" id="brierCalc">
+        <div class="controls">
+          <h3>Inputs</h3>
+          <div class="field">
+            <label>Your confidence</label>
+            <div class="conf-display">
+              <span class="pct" id="bcConfPct">75%</span>
+            </div>
+            <div class="conf-track">
+              <div class="fill" id="bcFill" style="width: 51%"></div>
+              <input type="range" id="bcSlider" min="50" max="99" step="1" value="75" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label>What happened?</label>
+            <div class="outcome-toggle">
+              <button class="yes on" data-outcome="1">Yes (it happened)</button>
+              <button class="no" data-outcome="0">No (it didn't)</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="brier-output" id="brierOutput">
+          <div class="lbl">Brier score</div>
+          <div class="score" id="brierScore">0.063</div>
+          <div class="formula">
+            (<span class="num" id="bcForecast">0.75</span> − <span class="num" id="bcOutcome">1</span>)² = <span class="num" id="bcResult">0.063</span>
+          </div>
+          <div class="brier-scale">
+            <div class="brier-scale-bar">
+              <div class="brier-scale-pointer" id="brierPointer"></div>
+            </div>
+            <div class="pt"><span class="num">0.00</span>Perfect</div>
+            <div class="pt"><span class="num">0.25</span>Random</div>
+            <div class="pt"><span class="num">1.00</span>Wrong</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         PRIVACY
+         ============================================ -->
     <section class="privacy" id="privacy">
-      <h2>Private by default</h2>
-      <div class="privacy-card">
+      <div class="reveal">
+        <h2>Private by default</h2>
+      </div>
+      <div class="privacy-card reveal">
         <div class="label">App Store privacy nutrition label</div>
         <h3>Data Not Collected</h3>
         <p>
           Présage collects nothing. Every prediction lives in a SwiftData store on your device. No analytics SDKs. No telemetry. No crash reporting. The privacy manifest declares zero tracking and zero collected data types — the strongest privacy claim available on the App Store.
         </p>
+
+        <div class="privacy-counters">
+          <div class="privacy-counter">
+            <div class="num" data-counter data-target="0">0</div>
+            <div class="lbl">Third-party SDKs</div>
+          </div>
+          <div class="privacy-counter">
+            <div class="num" data-counter data-target="0">0</div>
+            <div class="lbl">Analytics events</div>
+          </div>
+          <div class="privacy-counter">
+            <div class="num" data-counter data-target="0">0</div>
+            <div class="lbl">Tracking domains</div>
+          </div>
+        </div>
+
         <ul>
           <li>No analytics</li>
           <li>No telemetry</li>
@@ -183,39 +434,22 @@
       </div>
     </section>
 
-    <!-- MATH -->
-    <section class="math">
-      <h2>The math</h2>
-      <p class="lede">
-        Brier score is a proper scoring rule. You can't game it. Saying 70% when you really think 90% will hurt your score — that's what makes calibration measurable instead of theatre.
-      </p>
-
-      <div class="formula">
-        <div class="eq">Brier = (forecast − outcome)²</div>
-        <div class="meaning">
-          where <em>forecast</em> is your stated confidence (0.5–0.99) and <em>outcome</em> is 1 if it happened, 0 if it didn't.
-        </div>
-        <div class="scale">
-          <div class="pt"><span class="num">0.00</span>Perfect</div>
-          <div class="pt"><span class="num">0.25</span>Random (always 50%)</div>
-          <div class="pt"><span class="num">1.00</span>Maximally wrong</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- FINAL CTA -->
+    <!-- ============================================
+         FINAL CTA
+         ============================================ -->
     <section class="final">
-      <h2>The score is the score.</h2>
-      <p>Whether it humbles you or vindicates you — that's the whole point.</p>
-      <div class="cta-row">
-        <a href="#" class="cta cta-primary">
-          <svg width="18" height="20" viewBox="0 0 18 20" fill="currentColor"><path d="M14.94 10.46c-.02-2.03 1.66-3.01 1.74-3.06-.95-1.39-2.43-1.58-2.95-1.6-1.25-.13-2.45.74-3.09.74-.65 0-1.62-.72-2.67-.7-1.37.02-2.65.81-3.36 2.04-1.45 2.5-.37 6.2 1.03 8.23.69.99 1.5 2.1 2.55 2.06 1.03-.04 1.42-.66 2.66-.66 1.24 0 1.59.66 2.67.64 1.1-.02 1.8-1 2.47-2 .78-1.14 1.1-2.26 1.12-2.32-.02-.01-2.15-.83-2.17-3.27zM12.85 4.36c.57-.7.96-1.66.85-2.62-.83.04-1.83.55-2.42 1.24-.53.61-.99 1.59-.87 2.53.92.07 1.87-.46 2.44-1.15z"/></svg>
-          Download on the App Store
-        </a>
+      <div class="reveal">
+        <h2>The score is the score.</h2>
+        <p>Whether it humbles you or vindicates you — that's the whole point.</p>
+        <div class="cta-row" style="opacity: 1; animation: none">
+          <a href="#" class="cta cta-primary" data-magnetic>
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="currentColor"><path d="M14.94 10.46c-.02-2.03 1.66-3.01 1.74-3.06-.95-1.39-2.43-1.58-2.95-1.6-1.25-.13-2.45.74-3.09.74-.65 0-1.62-.72-2.67-.7-1.37.02-2.65.81-3.36 2.04-1.45 2.5-.37 6.2 1.03 8.23.69.99 1.5 2.1 2.55 2.06 1.03-.04 1.42-.66 2.66-.66 1.24 0 1.59.66 2.67.64 1.1-.02 1.8-1 2.47-2 .78-1.14 1.1-2.26 1.12-2.32-.02-.01-2.15-.83-2.17-3.27zM12.85 4.36c.57-.7.96-1.66.85-2.62-.83.04-1.83.55-2.42 1.24-.53.61-.99 1.59-.87 2.53.92.07 1.87-.46 2.44-1.15z"/></svg>
+            Download on the App Store
+          </a>
+        </div>
       </div>
     </section>
 
-    <!-- FOOTER -->
     <footer>
       <div class="row">
         <div>
@@ -234,5 +468,321 @@
     </footer>
   </div>
 
+  <script>
+    // ============================================================
+    // Présage marketing site — interactive layer
+    // No dependencies. Vanilla JS. Respects prefers-reduced-motion.
+    // ============================================================
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // ===== Scroll progress bar =====
+    const progressBar = document.getElementById('scrollProgress');
+    const nav = document.getElementById('nav');
+    function onScroll() {
+      const h = document.documentElement;
+      const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+      progressBar.style.width = (scrolled * 100) + '%';
+      nav.classList.toggle('scrolled', h.scrollTop > 24);
+    }
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // ===== Reveal-on-scroll =====
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      }
+    }, { rootMargin: '-10% 0px -10% 0px', threshold: 0.05 });
+
+    document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => io.observe(el));
+
+    // ===== Animated counters =====
+    const counterIO = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          animateCounter(e.target);
+          counterIO.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-counter]').forEach(el => counterIO.observe(el));
+
+    function animateCounter(el) {
+      const target = parseInt(el.dataset.target, 10);
+      const suffix = el.dataset.suffix || '';
+      if (reduceMotion) { el.textContent = target + suffix; return; }
+      const duration = 1600;
+      const startTime = performance.now();
+      function tick(now) {
+        const t = Math.min(1, (now - startTime) / duration);
+        const eased = 1 - Math.pow(1 - t, 4);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ===== Hero curve drawing =====
+    const userCurve = document.getElementById('userCurve');
+    if (userCurve) {
+      const length = userCurve.getTotalLength();
+      userCurve.style.strokeDasharray = length;
+      userCurve.style.strokeDashoffset = length;
+      if (reduceMotion) {
+        userCurve.style.strokeDashoffset = 0;
+      } else {
+        // Animate after a beat
+        setTimeout(() => {
+          userCurve.style.transition = 'stroke-dashoffset 2200ms cubic-bezier(0.16, 1, 0.3, 1)';
+          userCurve.style.strokeDashoffset = 0;
+
+          // Add dots along the curve once drawn
+          setTimeout(() => {
+            const group = document.getElementById('dotGroup');
+            const dots = [
+              [120, 410, 0.35],
+              [260, 340, 0.55],
+              [380, 260, 0.85],
+              [500, 180, 0.7],
+              [640, 120, 0.95],
+            ];
+            dots.forEach(([cx, cy, op], i) => {
+              const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+              c.setAttribute('cx', cx);
+              c.setAttribute('cy', cy);
+              c.setAttribute('r', '4');
+              c.setAttribute('fill', '#3FCFCF');
+              c.setAttribute('opacity', '0');
+              c.style.transition = `opacity 400ms ease ${i * 120}ms, r 400ms cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 120}ms`;
+              group.appendChild(c);
+              requestAnimationFrame(() => {
+                c.setAttribute('opacity', op);
+                c.setAttribute('r', '5');
+              });
+            });
+          }, 1800);
+        }, 500);
+      }
+    }
+
+    // ===== Gap-arc draw on hook section =====
+    const gapPath = document.getElementById('gapPath');
+    const gapArrow = document.getElementById('gapArrow');
+    const hookIO = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting && gapPath) {
+          if (reduceMotion) {
+            gapPath.style.strokeDashoffset = 0;
+            if (gapArrow) gapArrow.style.opacity = 1;
+          } else {
+            gapPath.style.transition = 'stroke-dashoffset 1400ms cubic-bezier(0.16, 1, 0.3, 1) 200ms';
+            gapPath.style.strokeDashoffset = 0;
+            if (gapArrow) gapArrow.style.opacity = 1;
+          }
+          hookIO.unobserve(e.target);
+        }
+      }
+    }, { threshold: 0.5 });
+    if (document.querySelector('.hook')) hookIO.observe(document.querySelector('.hook'));
+
+    // ===== Magnetic CTA buttons =====
+    if (!reduceMotion) {
+      document.querySelectorAll('[data-magnetic]').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+          const rect = btn.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          btn.style.transform = `translate(${x * 0.15}px, ${y * 0.25}px)`;
+        });
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transform = '';
+        });
+      });
+    }
+
+    // ===== Feature card mouse glow =====
+    document.querySelectorAll('.feature').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+      });
+    });
+
+    // ============================================================
+    // INTERACTIVE PREDICTION DEMO
+    // Implements the three-phase honesty mechanic in JS.
+    // ============================================================
+    const demoState = {
+      claim: '',
+      confidence: 70,
+      outcome: null,
+    };
+
+    const confSlider = document.getElementById('confSlider');
+    const confPct = document.getElementById('confPct');
+    const confQual = document.getElementById('confQual');
+    const confFill = document.getElementById('confFill');
+    const claimInput = document.getElementById('claim');
+    const step1Btn = document.getElementById('step1Submit');
+
+    function confidenceLabel(c) {
+      if (c < 55) return 'Coin flip';
+      if (c < 65) return 'Slight lean';
+      if (c < 75) return 'Likely';
+      if (c < 85) return 'Confident';
+      if (c < 95) return 'Very confident';
+      return 'Near certain';
+    }
+
+    function updateConfDisplay() {
+      const v = parseInt(confSlider.value, 10);
+      demoState.confidence = v;
+      confPct.textContent = v + '%';
+      confQual.textContent = confidenceLabel(v);
+      const pctOfRange = ((v - 50) / 49) * 100;
+      confFill.style.width = pctOfRange + '%';
+    }
+
+    confSlider.addEventListener('input', updateConfDisplay);
+    updateConfDisplay();
+
+    function showStep(n) {
+      document.querySelectorAll('.demo-step').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.step, 10) === n);
+      });
+    }
+
+    step1Btn.addEventListener('click', () => {
+      demoState.claim = claimInput.value.trim() || 'I will finish the book by Friday';
+      // populate echo
+      const echo = document.getElementById('claimEcho').querySelector('span');
+      echo.textContent = demoState.claim;
+      // hidden pill text — render the actual confidence so the unblur reveals
+      const hp = document.getElementById('hiddenConf');
+      hp.textContent = demoState.confidence + '%';
+      hp.classList.remove('unblur');
+      showStep(2);
+    });
+
+    document.querySelectorAll('.outcome-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        demoState.outcome = btn.dataset.outcome;
+        revealResult();
+        showStep(3);
+      });
+    });
+
+    function revealResult() {
+      const conf = demoState.confidence;
+      const outcome = demoState.outcome;
+      const forecast = conf / 100;
+
+      const revealConfEl = document.getElementById('revealConf');
+      const revealOutcomeEl = document.getElementById('revealOutcome');
+      const badge = document.getElementById('resultBadge');
+      const impact = document.getElementById('brierImpact');
+
+      // Animate counter for the confidence reveal
+      revealConfEl.textContent = '0%';
+      animateCountTo(revealConfEl, conf, '%', 700);
+
+      if (outcome === 'yes') {
+        revealOutcomeEl.textContent = 'Yes';
+        revealOutcomeEl.style.color = 'var(--accent)';
+        const brier = Math.pow(forecast - 1, 2);
+        const correctness = conf >= 50 ? 'correct' : 'incorrect';
+        badge.className = 'badge-result correct';
+        badge.textContent = '✓ You called it';
+        impact.innerHTML = `Brier score for this prediction:<br><span class="formula">(${forecast.toFixed(2)} − 1)² = ${brier.toFixed(3)}</span><br>${brier < 0.1 ? 'Excellent.' : brier < 0.25 ? 'Solid.' : 'Worth reflecting on.'}`;
+      } else if (outcome === 'no') {
+        revealOutcomeEl.textContent = 'No';
+        revealOutcomeEl.style.color = 'var(--accent-coral)';
+        const brier = Math.pow(forecast - 0, 2);
+        badge.className = 'badge-result incorrect';
+        badge.textContent = '✗ You missed';
+        impact.innerHTML = `Brier score for this prediction:<br><span class="formula">(${forecast.toFixed(2)} − 0)² = ${brier.toFixed(3)}</span><br>${brier > 0.5 ? 'High-confidence miss — these are the most expensive.' : 'A miss, but a measured one.'}`;
+      } else {
+        revealOutcomeEl.textContent = 'Ambiguous';
+        revealOutcomeEl.style.color = 'var(--text-2)';
+        badge.className = 'badge-result';
+        badge.style.background = 'var(--surface-3)';
+        badge.style.borderColor = 'var(--border-strong)';
+        badge.style.color = 'var(--text-2)';
+        badge.textContent = '— Unscored';
+        impact.innerHTML = `Ambiguous outcomes don't enter your calibration score. Présage drops them so muddy resolutions can't muddy your math.`;
+      }
+    }
+
+    function animateCountTo(el, target, suffix, ms) {
+      if (reduceMotion) { el.textContent = target + suffix; return; }
+      const start = performance.now();
+      function tick(now) {
+        const t = Math.min(1, (now - start) / ms);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    document.getElementById('restartDemo').addEventListener('click', () => {
+      claimInput.value = '';
+      confSlider.value = 70;
+      updateConfDisplay();
+      showStep(1);
+    });
+
+    // ============================================================
+    // INTERACTIVE BRIER CALCULATOR
+    // ============================================================
+    const bcSlider = document.getElementById('bcSlider');
+    const bcConfPct = document.getElementById('bcConfPct');
+    const bcFill = document.getElementById('bcFill');
+    const bcForecast = document.getElementById('bcForecast');
+    const bcOutcome = document.getElementById('bcOutcome');
+    const bcResult = document.getElementById('bcResult');
+    const brierScore = document.getElementById('brierScore');
+    const brierPointer = document.getElementById('brierPointer');
+    const brierOutput = document.getElementById('brierOutput');
+    let bcOutcomeVal = 1;
+
+    function recalcBrier() {
+      const conf = parseInt(bcSlider.value, 10);
+      const f = conf / 100;
+      const brier = Math.pow(f - bcOutcomeVal, 2);
+      bcConfPct.textContent = conf + '%';
+      const pctOfRange = ((conf - 50) / 49) * 100;
+      bcFill.style.width = pctOfRange + '%';
+      bcForecast.textContent = f.toFixed(2);
+      bcOutcome.textContent = bcOutcomeVal;
+      bcResult.textContent = brier.toFixed(3);
+      brierScore.textContent = brier.toFixed(3);
+
+      // Pointer position on 0..1 scale
+      brierPointer.style.left = (brier * 100) + '%';
+      // Color coding
+      brierOutput.classList.toggle('bad', brier > 0.25);
+      if (brier <= 0.10) brierPointer.style.borderColor = 'var(--accent)';
+      else if (brier <= 0.25) brierPointer.style.borderColor = '#9CB3A8';
+      else brierPointer.style.borderColor = 'var(--accent-coral)';
+    }
+
+    bcSlider.addEventListener('input', recalcBrier);
+    document.querySelectorAll('.outcome-toggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.outcome-toggle button').forEach(b => b.classList.remove('on'));
+        btn.classList.add('on');
+        bcOutcomeVal = parseInt(btn.dataset.outcome, 10);
+        recalcBrier();
+      });
+    });
+    recalcBrier();
+  </script>
 </body>
 </html>
