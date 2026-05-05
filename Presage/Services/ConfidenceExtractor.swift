@@ -49,15 +49,46 @@ enum ConfidenceExtractor {
         guard text.count >= 8 else { return nil }
         let lower = text.lowercased()
 
-        var best: Int? = nil
-        var bestPhraseLength = 0
-        for entry in lexicon where lower.contains(entry.phrase) {
-            if entry.phrase.count > bestPhraseLength {
-                best = entry.recommendedConfidence
-                bestPhraseLength = entry.phrase.count
+        // When BOTH a high-certainty phrase ("definitely") and a hedging
+        // phrase ("not sure", "might") appear in the same claim, the
+        // hedge wins — claims like "I'm not definitely sure" should map
+        // to the lean confidence, not the certain one.
+        // We pick the matching phrase with the LOWEST recommended
+        // confidence so any uncertainty marker overrides certainty.
+        var lowestMatch: Int? = nil
+        for entry in lexicon where containsAsWord(lower, entry.phrase) {
+            if let current = lowestMatch {
+                lowestMatch = min(current, entry.recommendedConfidence)
+            } else {
+                lowestMatch = entry.recommendedConfidence
             }
         }
-        guard let value = best else { return nil }
+        guard let value = lowestMatch else { return nil }
         return ConfidenceLevel.snap(value)
+    }
+
+    /// True when `phrase` appears in `haystack` flanked by non-letter
+    /// boundaries — "I think" matches "i think it's fine" but not
+    /// "rethink". Phrases that already contain non-letter characters
+    /// (e.g. "100%", "fifty-fifty") fall back to substring containment
+    /// since manual word-boundary tokenization breaks down on them.
+    private static func containsAsWord(_ haystack: String, _ phrase: String) -> Bool {
+        let phraseHasNonLetter = phrase.unicodeScalars.contains { !CharacterSet.letters.contains($0) && $0 != " " }
+        if phraseHasNonLetter {
+            return haystack.contains(phrase)
+        }
+        guard let range = haystack.range(of: phrase) else { return false }
+
+        // Check the character before the match (if any) is a boundary.
+        if range.lowerBound != haystack.startIndex {
+            let prevIdx = haystack.index(before: range.lowerBound)
+            if haystack[prevIdx].isLetter { return false }
+        }
+        // Check the character after.
+        if range.upperBound != haystack.endIndex {
+            let nextChar = haystack[range.upperBound]
+            if nextChar.isLetter { return false }
+        }
+        return true
     }
 }

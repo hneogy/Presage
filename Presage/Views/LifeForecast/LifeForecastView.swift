@@ -166,11 +166,22 @@ struct LifeForecastEditor: View {
                     PariButton("Save vision") {
                         let f = LifeForecast(domain: domain, horizonYears: horizonYears, vision: vision)
                         context.insert(f)
-                        try? context.save()
-                        dismiss()
+                        if PariPersistence.attemptSave(context, label: "save life forecast") {
+                            dismiss()
+                        } else {
+                            // Roll back so the user can retry without
+                            // an orphan vision attached to the context.
+                            context.delete(f)
+                        }
                     }
                     .opacity(canSave ? 1 : 0.4)
                     .disabled(!canSave)
+
+                    if !canSave {
+                        Text("Write at least 10 characters — vague visions are hard to score against in five years.")
+                            .font(.system(size: 11))
+                            .foregroundStyle(DS.Palette.textTertiary)
+                    }
                 }
                 .padding(20)
             }

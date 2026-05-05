@@ -1,5 +1,8 @@
 import CoreHaptics
 import Foundation
+import OSLog
+
+private let hapticLogger = Logger(subsystem: "com.pari.neogy", category: "Haptics")
 
 @MainActor
 final class HapticEngine {
@@ -21,6 +24,7 @@ final class HapticEngine {
             engine?.stoppedHandler = { _ in }
             try engine?.start()
         } catch {
+            hapticLogger.notice("Haptic engine init failed, falling back to UIKit haptics: \(error.localizedDescription, privacy: .public)")
             engine = nil
         }
     }
@@ -51,6 +55,7 @@ final class HapticEngine {
             let player = try engine.makePlayer(with: pattern)
             try player.start(atTime: 0)
         } catch {
+            hapticLogger.debug("Confidence tick haptic failed, falling back: \(error.localizedDescription, privacy: .public)")
             HapticService.confidenceTick(at: percent)
         }
     }
@@ -84,6 +89,9 @@ final class HapticEngine {
             let pattern = try CHHapticPattern(events: [beat1, beat2], parameters: [])
             let player = try engine.makePlayer(with: pattern)
             try player.start(atTime: 0)
-        } catch {}
+        } catch {
+            hapticLogger.debug("Resolution reveal haptic failed: \(error.localizedDescription, privacy: .public)")
+            HapticService.medium()
+        }
     }
 }

@@ -71,7 +71,10 @@ final class Prediction: Identifiable {
         self.id = UUID()
         self.claim = claim
         self.resolutionCriteria = resolutionCriteria
-        self.confidencePercent = confidencePercent
+        // Clamp at the model boundary so a buggy caller (CSV import row,
+        // intent invocation, future API) can't store a confidence that
+        // breaks the scoring math (log(0), Brier > 1).
+        self.confidencePercent = min(99, max(1, confidencePercent))
         self.resolutionDate = resolutionDate
         self.createdAt = .now
         self.categoryRaw = category.rawValue

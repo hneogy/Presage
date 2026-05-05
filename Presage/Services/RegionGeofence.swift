@@ -23,6 +23,11 @@ enum RegionGeofence {
         "TN",   // Tennessee — ban blocked by federal injunction but disclosed
     ]
 
+    /// Sentinel value users see when they explicitly chose "skip / ask
+    /// later" — distinguishes that from a never-prompted user so the
+    /// state-selector prompt doesn't keep nagging them.
+    static let skippedStateCode = "__SKIPPED__"
+
     /// Returns true if Kalshi/Polymarket-branded questions should be hidden.
     /// We default to "show" globally; only restrict when we're confident
     /// the device is in a restricted US state via region setting.
@@ -30,31 +35,61 @@ enum RegionGeofence {
         let regionCode = Locale.current.region?.identifier ?? ""
         guard regionCode == "US" else { return false }
 
-        // The iOS region is country-level, not state-level. Without GPS
-        // permission we can't pinpoint state. The conservative play is
-        // to hide branding for all US users until the user opts in via
-        // a state selector in settings (privacy-respecting).
-        let userSelectedState = UserDefaults.standard.string(forKey: "user-state-code") ?? ""
-        if userSelectedState.isEmpty {
-            // Unknown — show the neutralized "Forecasting questions" surface
-            // rather than risk pointing users at content illegal where they live.
-            return true
+        // The iOS region is country-level, not state-level. We hide
+        // branding only when the user has confirmed they're in one of
+        // the restricted states. A user who hasn't picked yet (or who
+        // explicitly tapped "ask me later") sees the unrestricted UI —
+        // they can still get into trouble in a restricted state, but
+        // forever-hiding for everyone unselected was punishing the 90%
+        // who live in unrestricted states.
+        let stored = UserDefaults.standard.string(forKey: "user-state-code") ?? ""
+        if stored.isEmpty || stored == skippedStateCode {
+            return false
         }
-        return restrictedUSStates.contains(userSelectedState)
+        return restrictedUSStates.contains(stored)
     }
 
-    /// Whether the user has acknowledged where they are. Lets us show the
-    /// state-selector prompt once instead of forever-hiding.
+    /// Whether the user has acknowledged where they are. The skip
+    /// sentinel counts as "selected" for prompt-suppression purposes —
+    /// the user said "leave me alone", which is its own valid answer.
     static func userHasSelectedState() -> Bool {
-        (UserDefaults.standard.string(forKey: "user-state-code") ?? "").isEmpty == false
+        let stored = UserDefaults.standard.string(forKey: "user-state-code") ?? ""
+        return !stored.isEmpty
     }
+
+    /// Allowed alphabet for state-code validation. Two-letter US state
+    /// codes are the only legitimate input; anything longer would flow
+    /// through to the predicate without being matched by `restrictedUSStates`,
+    /// but it would also bloat UserDefaults if a malicious caller passed
+    /// a megabyte string. Cap and whitelist defensively.
+    private static let stateCodeMaxLength = 4
 
     static func setUserState(_ code: String) {
-        UserDefaults.standard.set(code, forKey: "user-state-code")
+        let trimmed = code.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        // Allow the skip sentinel verbatim; otherwise enforce the
+        // 2-4 character alphabetic bound that real state codes fit.
+        if trimmed == skippedStateCode {
+            UserDefaults.standard.set(skippedStateCode, forKey: "user-state-code")
+            return
+        }
+        guard trimmed.count >= 2,
+              trimmed.count <= stateCodeMaxLength,
+              trimmed.allSatisfy({ $0.isLetter }) else {
+            return
+        }
+        UserDefaults.standard.set(trimmed, forKey: "user-state-code")
+    }
+
+    /// Records that the user dismissed the state selector without
+    /// picking. Treated as "show me the unrestricted UI and stop asking".
+    static func skipStateSelection() {
+        UserDefaults.standard.set(skippedStateCode, forKey: "user-state-code")
     }
 
     static func currentUserState() -> String? {
-        UserDefaults.standard.string(forKey: "user-state-code")
+        let stored = UserDefaults.standard.string(forKey: "user-state-code")
+        if stored == skippedStateCode { return nil }
+        return stored
     }
 
     /// Description users see if they're in a restricted region.

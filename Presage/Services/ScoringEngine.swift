@@ -2,16 +2,27 @@ import Foundation
 
 enum ScoringEngine {
 
+    /// Probabilities are clamped to this open interval before any log/Brier
+    /// math, so a corrupted or out-of-range confidence can never produce
+    /// NaN, ±Inf, or a negative Brier. Lower than the previous 0.001 so
+    /// confident predictions don't all collapse onto the same log floor.
+    private static let probabilityEpsilon: Double = 1e-6
+
+    private static func clampedForecast(_ confidencePercent: Int) -> Double {
+        let raw = Double(confidencePercent) / 100.0
+        return min(1.0 - probabilityEpsilon, max(probabilityEpsilon, raw))
+    }
+
     static func brierScore(confidencePercent: Int, outcome: Bool) -> Double {
-        let forecast = Double(confidencePercent) / 100.0
+        let forecast = clampedForecast(confidencePercent)
         let actual: Double = outcome ? 1.0 : 0.0
         return (forecast - actual) * (forecast - actual)
     }
 
     static func logScore(confidencePercent: Int, outcome: Bool) -> Double {
-        let forecast = Double(confidencePercent) / 100.0
+        let forecast = clampedForecast(confidencePercent)
         let p = outcome ? forecast : (1.0 - forecast)
-        return log2(max(p, 0.001))
+        return log2(p)
     }
 
     /// Single chokepoint for "what counts toward your Brier?" — yes/no
@@ -25,7 +36,7 @@ enum ScoringEngine {
     /// disagreed with the headline Brier. Now centralized.
     private static func headlineScorable(_ predictions: [Prediction]) -> [Prediction] {
         predictions.filter {
-            !$0.isFudged && ($0.outcome == .yes || $0.outcome == .no)
+            !$0.isFudged && !$0.isTrainingMode && ($0.outcome == .yes || $0.outcome == .no)
         }
     }
 
@@ -104,8 +115,18 @@ enum ScoringEngine {
     /// via the fudge button. Showing fudged predictions on the wall of shame
     /// would be punitive after the user already confessed; they're excluded.
     static func worstMisses(_ predictions: [Prediction], minConfidence: Int = 80, limit: Int = 5) -> [Prediction] {
+        // Training-mode predictions never count toward real calibration
+        // (see headlineScorable for the contract). They likewise can't
+        // earn a spot on the wall of shame — that would be punitive for
+        // a deliberate practice answer the user wasn't claiming as a
+        // real forecast.
         predictions
-            .filter { !$0.isFudged && $0.outcome == .no && $0.confidencePercent >= minConfidence }
+            .filter {
+                !$0.isFudged
+                && !$0.isTrainingMode
+                && $0.outcome == .no
+                && $0.confidencePercent >= minConfidence
+            }
             .sorted { brierScore(confidencePercent: $0.confidencePercent, outcome: false) >
                       brierScore(confidencePercent: $1.confidencePercent, outcome: false) }
             .prefix(limit)
@@ -113,9 +134,10 @@ enum ScoringEngine {
     }
 
     static func averageConfidence(_ predictions: [Prediction]) -> Int? {
-        guard !predictions.isEmpty else { return nil }
-        let total = predictions.reduce(0) { $0 + $1.confidencePercent }
-        return total / predictions.count
+        let real = predictions.filter { !$0.isTrainingMode }
+        guard !real.isEmpty else { return nil }
+        let total = real.reduce(0) { $0 + $1.confidencePercent }
+        return total / real.count
     }
 
     static func hitRate(_ predictions: [Prediction]) -> Double? {

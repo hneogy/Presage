@@ -15,6 +15,20 @@ enum OnboardingPushScheduler {
 
     static func scheduleRetentionSequence() async {
         let center = UNUserNotificationCenter.current()
+
+        // Bail unless the user has actually granted notification
+        // authorization. UNUserNotificationCenter.add() silently no-ops
+        // when permission was denied, so without this gate we'd burn
+        // three slot reservations for pushes that will never fire — and
+        // the caller would never know. Querying the settings is cheaper
+        // than calling requestAuthorization() again (which would re-prompt
+        // on first launch).
+        let settings = await center.notificationSettings()
+        guard settings.authorizationStatus == .authorized
+                || settings.authorizationStatus == .provisional else {
+            return
+        }
+
         // Cancel any prior retention sequence (e.g. after deleting the
         // first prediction and re-onboarding)
         center.removePendingNotificationRequests(withIdentifiers: [day1ID, day3ID, day7ID])

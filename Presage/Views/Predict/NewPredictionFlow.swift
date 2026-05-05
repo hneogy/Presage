@@ -61,6 +61,7 @@ struct NewPredictionFlow: View {
                 .animation(DS.Motion.stateAnimation, value: claim.count >= 5)
                 .animation(DS.Motion.stateAnimation, value: resolutionCriteria.count >= 5)
             }
+            .scrollDismissesKeyboard(.interactively)
             .background(DS.Palette.surfacePrimary)
             .safeAreaInset(edge: .bottom) {
                 saveBar
@@ -268,16 +269,29 @@ struct NewPredictionFlow: View {
     // MARK: - Save Bar
 
     private var saveBar: some View {
-        VStack {
+        VStack(spacing: 6) {
             PariButton("Save prediction") {
                 savePrediction()
             }
             .opacity(canSave ? 1 : 0.4)
             .disabled(!canSave)
-            .padding(.horizontal, DS.Space.base)
-            .padding(.vertical, DS.Space.md)
+
+            if !canSave {
+                Text(saveBlockedReason)
+                    .font(DS.Typo.footnote)
+                    .foregroundStyle(DS.Palette.textTertiary)
+            }
         }
+        .padding(.horizontal, DS.Space.base)
+        .padding(.vertical, DS.Space.md)
         .reducibleMaterial(.ultraThinMaterial, fallback: DS.Palette.surfaceSecondary)
+    }
+
+    private var saveBlockedReason: String {
+        if claim.count < 5 { return "Claim needs at least 5 characters" }
+        if resolutionCriteria.count < 5 { return "Criteria needs at least 5 characters" }
+        if resolutionDate <= .now { return "Resolution date must be in the future" }
+        return ""
     }
 
     // MARK: - Helpers
@@ -295,14 +309,31 @@ struct NewPredictionFlow: View {
 
     private func savePrediction() {
         guard canSave else { return }
+        // Run the same sanitizer the CSV importer and intents use:
+        // strips control chars + Unicode bidi overrides + caps length.
+        // Without this, a pasted claim from a hostile/trolling source
+        // could carry RTL-override marks that flip rendering inside
+        // notifications and share cards.
+        let cleanedClaim = UserTextSanitizer.sanitize(claim, maxLength: 500)
+        let cleanedCriteria = UserTextSanitizer.sanitize(resolutionCriteria, maxLength: 1000)
+        // Re-validate post-sanitize: if a claim was 500 control chars it
+        // would now be empty and shouldn't save.
+        guard cleanedClaim.count >= 5, cleanedCriteria.count >= 5 else { return }
+
         engine.createPrediction(
-            claim: claim,
-            resolutionCriteria: resolutionCriteria,
+            claim: cleanedClaim,
+            resolutionCriteria: cleanedCriteria,
             confidencePercent: confidencePercent,
             resolutionDate: resolutionDate,
             category: category,
             moodTag: moodTag,
-            witnessName: witnessName.isEmpty ? nil : witnessName,
+            witnessName: {
+                let trimmed = witnessName.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else { return nil }
+                return UserTextSanitizer.sanitize(trimmed, maxLength: 100).isEmpty
+                    ? nil
+                    : UserTextSanitizer.sanitize(trimmed, maxLength: 100)
+            }(),
             in: context
         )
         HapticService.success()

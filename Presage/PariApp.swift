@@ -50,8 +50,15 @@ struct PariApp: App {
 
                     BackgroundTaskScheduler.schedule()
                     _ = await NotificationScheduler.shared.requestPermission()
-                    TrainingPack.seedIfNeeded(in: modelContainer.mainContext)
-                    RecurrenceEngine.spawnDuePredictions(in: modelContainer.mainContext)
+
+                    // Seed work that fetches from SwiftData runs after the
+                    // first frame so the launch render isn't blocked on
+                    // potentially-large reads.
+                    let context = modelContainer.mainContext
+                    Task.detached(priority: .utility) { @MainActor in
+                        TrainingPack.seedIfNeeded(in: context)
+                        RecurrenceEngine.spawnDuePredictions(in: context)
+                    }
                 }
         }
         .modelContainer(modelContainer)

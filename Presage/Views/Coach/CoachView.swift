@@ -19,6 +19,7 @@ struct CoachView: View {
     @Query(sort: \CoachMessage.createdAt) private var messages: [CoachMessage]
 
     @State private var sundayEnabled: Bool = true
+    @State private var sundayToggleTask: Task<Void, Never>?
 
     var body: some View {
         ScrollView {
@@ -46,6 +47,10 @@ struct CoachView: View {
         .background(DS.Atmosphere.insights(colorScheme))
         .navigationTitle("Coach")
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            sundayToggleTask?.cancel()
+            sundayToggleTask = nil
+        }
     }
 
     private var header: some View {
@@ -115,7 +120,11 @@ struct CoachView: View {
                     .labelsHidden()
                     .tint(DS.Palette.accent)
                     .onChange(of: sundayEnabled) { _, on in
-                        Task {
+                        // Cancel any in-flight toggle so rapid taps don't
+                        // race the notification-permission grant against
+                        // each other.
+                        sundayToggleTask?.cancel()
+                        sundayToggleTask = Task { @MainActor in
                             if on {
                                 await SundayRetrospectiveScheduler.enable()
                             } else {

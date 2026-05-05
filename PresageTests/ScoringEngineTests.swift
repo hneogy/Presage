@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import Pari
+@testable import Presage
 
 @Suite("ScoringEngine")
 struct ScoringEngineTests {

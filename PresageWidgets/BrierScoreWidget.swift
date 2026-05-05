@@ -58,17 +58,32 @@ struct BrierScoreWidgetView: View {
     let entry: BrierScoreEntry
     @Environment(\.widgetFamily) var family
 
-    var body: some View {
-        switch family {
-        case .accessoryRectangular:
-            rectangularLockScreen
-        case .accessoryCircular:
-            circularLockScreen
-        case .accessoryInline:
-            Text("Brier: \(scoreString)")
-        default:
-            homeScreen
+    private var accessibilitySummary: String {
+        guard entry.brierScore != nil else {
+            return "No Brier score yet. Resolve at least one prediction."
         }
+        return "Brier score \(scoreString). \(entry.totalResolved) resolved, \(entry.activeCount) active. Tap to open insights."
+    }
+
+    var body: some View {
+        Group {
+            switch family {
+            case .accessoryRectangular:
+                rectangularLockScreen
+            case .accessoryCircular:
+                circularLockScreen
+            case .accessoryInline:
+                Text("Brier: \(scoreString)")
+            default:
+                homeScreen
+            }
+        }
+        // Deep-link the whole widget into the Insights tab so a tap
+        // takes the user to the calibration curve that the score
+        // summarizes — instead of a no-op tap.
+        .widgetURL(URL(string: "pari://insights"))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilitySummary)
     }
 
     private var homeScreen: some View {
@@ -121,7 +136,7 @@ struct BrierScoreWidgetView: View {
 
     private var scoreString: String {
         guard let s = entry.brierScore else { return "—" }
-        return String(format: "%.3f", s)
+        return PariWidgetStore.formatBrier(s)
     }
 }
 

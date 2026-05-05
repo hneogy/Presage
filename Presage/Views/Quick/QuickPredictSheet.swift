@@ -10,6 +10,7 @@ struct QuickPredictSheet: View {
 
     @State private var claim: String = ""
     @State private var confidence: Int = 70
+    @State private var category: PredictionCategory = .behavior
     @State private var aiSuggestedConfidence: Int? = nil
     @State private var extractorTask: Task<Void, Never>? = nil
     @FocusState private var focused: Bool
@@ -42,6 +43,19 @@ struct QuickPredictSheet: View {
 
                 ConfidenceDial(confidencePercent: $confidence)
 
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(PredictionCategory.allCases) { cat in
+                            PariChip(
+                                label: cat.displayName,
+                                isSelected: category == cat
+                            ) {
+                                category = cat
+                            }
+                        }
+                    }
+                }
+
                 Spacer()
 
                 PariButton("Save · resolves in 1 week") {
@@ -61,11 +75,8 @@ struct QuickPredictSheet: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
+                        engine.pendingShowNewPrediction = true
                         dismiss()
-                        Task { @MainActor in
-                            try? await Task.sleep(for: .milliseconds(300))
-                            engine.showNewPrediction = true
-                        }
                     } label: {
                         Text("Full form")
                             .font(.system(size: 14, weight: .medium))
@@ -75,6 +86,12 @@ struct QuickPredictSheet: View {
             }
             .onAppear {
                 focused = true
+            }
+            .onDisappear {
+                // Cancel any in-flight AI suggestion so it can't fire after
+                // dismiss and capture a sheet that's already gone.
+                extractorTask?.cancel()
+                extractorTask = nil
             }
         }
     }
@@ -124,17 +141,21 @@ struct QuickPredictSheet: View {
 
     private func save() {
         let resolutionDate = Calendar.current.date(byAdding: .day, value: 7, to: .now) ?? .now
-        let trimmed = claim.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Sanitize the same way the full form, intents, and CSV importer
+        // do: trim, strip control chars and bidi overrides, cap length.
+        let cleanedClaim = UserTextSanitizer.sanitize(claim, maxLength: 500)
+        guard cleanedClaim.count >= 5 else { return }
+
         // Concrete, criterion-shaped default so QualityChecker doesn't
         // flag this as vague — would otherwise pollute the wall of shame.
-        let defaultCriteria = "Did the claim '\(trimmed)' actually happen by \(resolutionDate.formatted(.dateTime.month(.abbreviated).day()))?"
+        let defaultCriteria = "Did the claim '\(cleanedClaim)' actually happen by \(resolutionDate.formatted(.dateTime.month(.abbreviated).day()))?"
 
         engine.createPrediction(
-            claim: trimmed,
+            claim: cleanedClaim,
             resolutionCriteria: defaultCriteria,
             confidencePercent: confidence,
             resolutionDate: resolutionDate,
-            category: .behavior,
+            category: category,
             moodTag: nil,
             witnessName: nil,
             in: context

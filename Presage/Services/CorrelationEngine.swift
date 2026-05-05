@@ -100,8 +100,20 @@ enum CorrelationEngine {
 
         for (cat, group) in byCategory where group.count >= 4 {
             guard let b = ScoringEngine.aggregateBrier(group) else { continue }
-            if worst == nil || b > worst!.1 { worst = (cat, b) }
-            if best == nil || b < best!.1 { best = (cat, b) }
+            // Use optional binding instead of `worst!.1` so a future
+            // refactor can't accidentally crash this path. The compiler
+            // can't currently prove that the `nil` check on the LHS
+            // implies safety on the RHS, but optional chaining does.
+            if let currentWorst = worst {
+                if b > currentWorst.1 { worst = (cat, b) }
+            } else {
+                worst = (cat, b)
+            }
+            if let currentBest = best {
+                if b < currentBest.1 { best = (cat, b) }
+            } else {
+                best = (cat, b)
+            }
         }
 
         guard let w = worst, let bb = best, w.0 != bb.0 else { return [] }

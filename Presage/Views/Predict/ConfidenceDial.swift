@@ -66,7 +66,9 @@ struct ConfidenceDial: View {
                     .fill(trackColor)
                     .frame(height: trackHeight)
 
-                // Tick marks (subtle, on the track)
+                // Tick marks (subtle, on the track). Rasterised so the
+                // 50 rectangles compose to a single Metal layer instead of
+                // 50 separate SwiftUI redraws on every drag tick.
                 HStack(spacing: 0) {
                     ForEach(ConfidenceLevel.allSteps, id: \.self) { step in
                         let isMajor = [50, 75, 99].contains(step)
@@ -79,6 +81,7 @@ struct ConfidenceDial: View {
                     }
                 }
                 .padding(.horizontal, thumbSize / 2)
+                .drawingGroup()
 
                 // Filled gradient
                 Capsule()

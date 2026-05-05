@@ -12,6 +12,7 @@ struct HumanVsAIDuelView: View {
     @State private var aiConfidence: Int? = nil
     @State private var aiReasoning: String? = nil
     @State private var saved = false
+    @State private var lastError: String? = nil
 
     var body: some View {
         ScrollView {
@@ -24,6 +25,8 @@ struct HumanVsAIDuelView: View {
 
                 if let conf = aiConfidence {
                     aiResultCard(conf)
+                } else if let err = lastError {
+                    errorCard(err)
                 } else {
                     PariButton(loading ? "Asking…" : "Ask the model") {
                         ask()
@@ -104,9 +107,15 @@ struct HumanVsAIDuelView: View {
                         let duel = DuelPrediction(predictionID: prediction.id, aiModel: aiModel,
                                                   aiConfidence: conf, aiReasoning: aiReasoning)
                         context.insert(duel)
-                        try? context.save()
-                        saved = true
-                        HapticEngine.shared.resolutionReveal()
+                        if PariPersistence.attemptSave(context, label: "lock in duel") {
+                            saved = true
+                            HapticEngine.shared.resolutionReveal()
+                        } else {
+                            // Roll back so the @Query doesn't surface a
+                            // half-saved duel and the user can retry.
+                            context.delete(duel)
+                            lastError = "Couldn't save the duel. Try again."
+                        }
                     }
                 } else {
                     Text("Locked. Both you and \(aiModel.displayName) will be scored when this resolves.")
@@ -126,6 +135,7 @@ struct HumanVsAIDuelView: View {
 
     private func ask() {
         loading = true
+        lastError = nil
         Task {
             do {
                 let result = try await AILLMBridge.shared.askForConfidence(
@@ -135,10 +145,33 @@ struct HumanVsAIDuelView: View {
                 )
                 aiConfidence = result.confidence
                 aiReasoning = result.reasoning
+                lastError = nil
             } catch {
-                aiReasoning = "Couldn't reach the model."
+                lastError = "Couldn't reach \(aiModel.displayName). Check your API key in Settings → AI, or try again."
             }
             loading = false
+        }
+    }
+
+    private func errorCard(_ message: String) -> some View {
+        PariCard {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundStyle(DS.Palette.accentSecondary)
+                    Text("Couldn't ask the model")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(DS.Palette.textPrimary)
+                }
+                Text(message)
+                    .font(.system(size: 13))
+                    .foregroundStyle(DS.Palette.textSecondary)
+                    .lineSpacing(2)
+                PariButton("Try again", style: .secondary) {
+                    ask()
+                }
+                .disabled(loading)
+            }
         }
     }
 }

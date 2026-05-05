@@ -1,15 +1,34 @@
 import SwiftUI
+import os
 
 /// Renders a beautiful resolved-prediction card as a UIImage suitable
 /// for sharing on social. Privacy-respecting — user picks what to share.
 @MainActor
 enum ShareCardRenderer {
 
+    /// Conservative pre-flight memory floor. Below this we skip the
+    /// 2x render rather than risk a memory-pressure jetsam on older
+    /// devices. The static card is ~30 MB at 2x; we leave 3x headroom.
+    private static let memoryFloorBytes: UInt64 = 100 * 1024 * 1024
+
     static func render(prediction: Prediction, brierScore: Double?) -> UIImage? {
+        // Probe available memory before instantiating the ImageRenderer.
+        // ImageRenderer with a 1080x1080 view at 2x scale allocates a
+        // bitmap that briefly doubles its working set, which is enough
+        // to push older iPhones over the jetsam line under load.
+        let available = os_proc_available_memory()
+        if available > 0 && UInt64(available) < memoryFloorBytes {
+            return nil
+        }
+
         let view = ShareCard(prediction: prediction, overallBrier: brierScore)
             .frame(width: 1080, height: 1080)
         let renderer = ImageRenderer(content: view)
-        renderer.scale = 2.0
+        // Cap the scale at 1x on devices below the comfortable memory
+        // headroom. The result is a 1080x1080 image either way; only
+        // the bitmap working set differs.
+        let availableUInt = UInt64(max(available, 0))
+        renderer.scale = availableUInt < memoryFloorBytes * 2 ? 1.0 : 2.0
         return renderer.uiImage
     }
 }

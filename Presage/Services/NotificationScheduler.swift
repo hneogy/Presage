@@ -25,15 +25,29 @@ final class NotificationScheduler {
         let center = UNUserNotificationCenter.current()
         let baseID = prediction.id.uuidString
 
-        let claimPreview = String(prediction.claim.prefix(50))
+        // Respect the user's notification-preview privacy preference.
+        // Default true; when off, replace the inline claim with a
+        // generic placeholder so a glance at the lock screen doesn't
+        // leak a sensitive prediction's contents.
+        let previewsOn: Bool = {
+            if UserDefaults.standard.object(forKey: "notificationPreviewsEnabled") == nil {
+                return true
+            }
+            return UserDefaults.standard.bool(forKey: "notificationPreviewsEnabled")
+        }()
+        let claimPreview = previewsOn
+            ? String(prediction.claim.prefix(50))
+            : "your prediction"
 
         let triggers: [(String, Date, String)] = [
             ("\(baseID)-due", prediction.resolutionDate,
-             "Time to resolve: \(claimPreview)"),
+             previewsOn ? "Time to resolve: \(claimPreview)" : "Time to resolve a prediction."),
             ("\(baseID)-1d", prediction.resolutionDate.addingTimeInterval(86400),
              "You have a prediction to resolve."),
             ("\(baseID)-3d", prediction.resolutionDate.addingTimeInterval(86400 * 3),
-             "Still waiting on your answer for \(claimPreview)."),
+             previewsOn
+                ? "Still waiting on your answer for \(claimPreview)."
+                : "Still waiting on your answer."),
             ("\(baseID)-7d", prediction.resolutionDate.addingTimeInterval(86400 * 7),
              "Your prediction is a week overdue. Be honest with yourself."),
         ]

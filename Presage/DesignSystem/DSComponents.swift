@@ -17,6 +17,13 @@ struct PariButton: View {
     let action: () -> Void
 
     @State private var isPressed = false
+    /// Drops repeated taps that arrive within the debounce window.
+    /// Without this, a user double-tapping "Save prediction" before the
+    /// modal dismisses fires `engine.createPrediction` twice and creates
+    /// two identical rows. Cleared after the window so legitimate
+    /// re-taps (e.g. after an error alert) still go through.
+    @State private var lastFireDate: Date = .distantPast
+    private static let debounceInterval: TimeInterval = 0.6
 
     init(
         _ title: String,
@@ -32,8 +39,15 @@ struct PariButton: View {
         self.action = action
     }
 
+    private func debouncedAction() {
+        let now = Date()
+        guard now.timeIntervalSince(lastFireDate) >= Self.debounceInterval else { return }
+        lastFireDate = now
+        action()
+    }
+
     var body: some View {
-        Button(action: action) {
+        Button(action: debouncedAction) {
             HStack(spacing: DS.Space.sm) {
                 if let icon {
                     Image(systemName: icon)
@@ -125,8 +139,14 @@ struct PariChip: View {
             Text(label)
                 .font(.system(size: 13, weight: isSelected ? .semibold : .medium))
                 .foregroundStyle(isSelected ? DS.Palette.darkSurfacePrimary : DS.Palette.textSecondary)
+                .lineLimit(1)
                 .padding(.horizontal, 14)
-                .frame(height: 32)
+                .padding(.vertical, 6)
+                // minHeight rather than fixed height so the chip can grow
+                // vertically at accessibility text sizes — fixed height
+                // clipped descenders at AX1+ and clipped the entire label
+                // at AX3+.
+                .frame(minHeight: 32)
                 .background(
                     Capsule(style: .continuous)
                         .fill(isSelected ? AnyShapeStyle(tint) : AnyShapeStyle(DS.Palette.surfaceTertiary))
@@ -134,6 +154,7 @@ struct PariChip: View {
                 .animation(.spring(response: 0.25, dampingFraction: 0.7), value: isSelected)
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 }
 

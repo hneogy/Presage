@@ -50,4 +50,12 @@ enum PariWidgetStore {
         }()
         return try ModelContainer(for: canonicalSchema, configurations: [config])
     }
+
+    /// Locale-aware 3-decimal Brier formatter. Widget views can't import
+    /// the host app's PariFormat (different target), and `String(format:)`
+    /// hardcodes "." as the decimal separator — wrong in `,`-decimal
+    /// locales. Use this everywhere the widgets need to render a Brier.
+    static func formatBrier(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(3)))
+    }
 }

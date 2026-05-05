@@ -1,6 +1,6 @@
 import Testing
 import Foundation
-@testable import Pari
+@testable import Presage
 
 @Suite("Prediction")
 struct PredictionTests {
@@ -48,5 +48,72 @@ struct PredictionTests {
         #expect(HorizonLabel.from(created: now, resolution: twoWeeks) == .weeks)
         #expect(HorizonLabel.from(created: now, resolution: twoMonths) == .months)
         #expect(HorizonLabel.from(created: now, resolution: oneYear) == .long)
+    }
+
+    // MARK: - Boundary / corruption tests
+    //
+    // These exist because the model now clamps confidence at the init
+    // boundary (Prediction.swift). A regression that removes the clamp
+    // would let log scoring and Brier math see -1 / 0 / 100 and produce
+    // NaN/-Inf — and we want a test, not the user, to catch that.
+
+    @Test("Confidence above 99 is clamped at the model boundary")
+    func confidenceClampedHigh() {
+        let p = Prediction(
+            claim: "test claim",
+            resolutionCriteria: "test criteria",
+            confidencePercent: 1000,
+            resolutionDate: .now.addingTimeInterval(86400),
+            category: .work
+        )
+        #expect(p.confidencePercent == 99)
+    }
+
+    @Test("Confidence below 1 is clamped at the model boundary")
+    func confidenceClampedLow() {
+        let zero = Prediction(
+            claim: "zero",
+            resolutionCriteria: "criteria",
+            confidencePercent: 0,
+            resolutionDate: .now.addingTimeInterval(86400),
+            category: .work
+        )
+        #expect(zero.confidencePercent == 1)
+
+        let negative = Prediction(
+            claim: "negative",
+            resolutionCriteria: "criteria",
+            confidencePercent: -50,
+            resolutionDate: .now.addingTimeInterval(86400),
+            category: .work
+        )
+        #expect(negative.confidencePercent == 1)
+    }
+
+    @Test("Choices Codable round-trip survives empty data")
+    func choicesEmptyData() {
+        let p = Prediction(
+            claim: "test",
+            resolutionCriteria: "criteria",
+            confidencePercent: 70,
+            resolutionDate: .now.addingTimeInterval(86400),
+            category: .work
+        )
+        // Default choices on a fresh prediction must be empty, not nil
+        // — the @Model getter returns [] on missing data so callers can
+        // map over the array unconditionally.
+        #expect(p.choices.isEmpty)
+    }
+
+    @Test("Tags Codable round-trip survives empty data")
+    func tagsEmptyData() {
+        let p = Prediction(
+            claim: "test",
+            resolutionCriteria: "criteria",
+            confidencePercent: 70,
+            resolutionDate: .now.addingTimeInterval(86400),
+            category: .work
+        )
+        #expect(p.tags.isEmpty)
     }
 }

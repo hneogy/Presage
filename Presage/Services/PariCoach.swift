@@ -5,6 +5,13 @@ import SwiftData
 /// available, falls back to deterministic rule-based responses otherwise.
 /// Generates Sunday retrospectives, prediction-time questions, and
 /// post-resolution reflection prompts.
+///
+/// **Read-only contract:** PariCoach must never mutate the
+/// ModelContext. It composes strings from snapshot data passed in by
+/// the caller; persistence (e.g. recording a `CoachMessage` from the
+/// generated string) is the caller's responsibility. Adding writes
+/// here would break the assumption every call site makes — that
+/// reading from the coach is a free, side-effect-free string lookup.
 @MainActor
 enum PariCoach {
 

@@ -32,7 +32,9 @@ struct TrainingView: View {
                     questionCard(q)
                     answerControls(q)
                 } else if revealedQuestion != nil {
-                    EmptyView()
+                    // Intentionally empty — the revealCard below carries
+                    // the screen during this transitional state.
+                    Color.clear.frame(height: 0)
                 } else {
                     PariEmptyState(
                         icon: "checkmark.seal",
@@ -208,6 +210,14 @@ struct TrainingView: View {
 
     private func submit(_ question: TrainingQuestion) {
         guard let answer = userAnswerYes else { return }
+        // Capture the prior state so we can roll back if persistence
+        // fails — without this the user sees a "reviewed" UI for a
+        // training answer that never made it to disk.
+        let priorAnsweredAt = question.userAnsweredAt
+        let priorAnswerYes = question.userAnswerYes
+        let priorConfidence = question.userConfidencePercent
+        let priorBrier = question.userBrierScore
+
         question.userAnsweredAt = .now
         question.userAnswerYes = answer
         question.userConfidencePercent = confidencePercent
@@ -216,7 +226,13 @@ struct TrainingView: View {
             confidencePercent: confidencePercent,
             outcome: wasYes
         )
-        try? context.save()
+        guard PariPersistence.attemptSave(context, label: "training answer") else {
+            question.userAnsweredAt = priorAnsweredAt
+            question.userAnswerYes = priorAnswerYes
+            question.userConfidencePercent = priorConfidence
+            question.userBrierScore = priorBrier
+            return
+        }
 
         HapticEngine.shared.resolutionReveal()
         revealedQuestion = question

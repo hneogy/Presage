@@ -34,9 +34,14 @@ enum WitnessShareService {
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let root = scene.windows.first?.rootViewController else { return }
 
+        // Cap the traversal depth: a UIKit presentation chain in a healthy
+        // app is at most a few levels deep. An unbounded loop here would
+        // hang on any future bug that introduces a presentation cycle.
         var presenting = root
-        while let next = presenting.presentedViewController {
+        var depth = 0
+        while let next = presenting.presentedViewController, depth < 16 {
             presenting = next
+            depth += 1
         }
         presenting.present(activityVC, animated: true)
     }

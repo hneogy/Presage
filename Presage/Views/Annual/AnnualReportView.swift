@@ -5,6 +5,8 @@ struct AnnualReportView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.colorScheme) private var colorScheme
     @State private var pdfData: Data? = nil
+    @State private var generating = false
+    @State private var errorMessage: String? = nil
 
     @Query(filter: #Predicate<Prediction> { $0.outcomeRaw != nil })
     private var resolved: [Prediction]
@@ -22,13 +24,30 @@ struct AnnualReportView: View {
             VStack(alignment: .leading, spacing: 20) {
                 header
                 summaryCard
-                PariButton("Generate PDF") {
-                    pdfData = AnnualReportRenderer.renderPDF(data: data)
-                }
-                if pdfData != nil {
-                    PariButton("Share PDF", style: .secondary, icon: "square.and.arrow.up") {
-                        presentShare()
+                if generating {
+                    HStack(spacing: 10) {
+                        ProgressView()
+                        Text("Building PDF…")
+                            .font(.system(size: 13))
+                            .foregroundStyle(DS.Palette.textSecondary)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                } else {
+                    PariButton("Generate PDF") {
+                        generatePDF()
+                    }
+                    if pdfData != nil {
+                        PariButton("Share PDF", style: .secondary, icon: "square.and.arrow.up") {
+                            presentShare()
+                        }
+                    }
+                }
+                if let errorMessage {
+                    Text(errorMessage)
+                        .font(.system(size: 12))
+                        .foregroundStyle(DS.Palette.accentSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .padding(20)
@@ -38,6 +57,25 @@ struct AnnualReportView: View {
         .background(DS.Atmosphere.insights(colorScheme))
         .navigationTitle("Annual Report")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func generatePDF() {
+        generating = true
+        errorMessage = nil
+        // ImageRenderer + UIGraphicsPDFRenderer are MainActor-bound, so we
+        // can't truly background the work — but yielding once gives SwiftUI
+        // a frame to paint the spinner before the synchronous PDF pass
+        // begins, which is the difference between a janky tap and a
+        // visibly-progressing operation.
+        Task { @MainActor in
+            await Task.yield()
+            let result = AnnualReportRenderer.renderPDF(data: data)
+            pdfData = result
+            generating = false
+            if result == nil {
+                errorMessage = "Couldn't render the PDF. Try again, or restart Présage."
+            }
+        }
     }
 
     private var header: some View {
@@ -105,13 +143,26 @@ struct AnnualReportView: View {
 
     private func presentShare() {
         guard let data = pdfData else { return }
+        // Per-invocation UUID suffix so a hostile process on the device
+        // can't predict the exact /tmp path and stage a swap between
+        // our `write(to:)` and the share sheet picking the file up.
+        // Atomic write also defends against partial-write corruption.
+        let suffix = UUID().uuidString.prefix(8)
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("Présage-Calibration-Report.pdf")
-        try? data.write(to: url)
+            .appendingPathComponent("Presage-Calibration-Report-\(suffix).pdf")
+        do {
+            try data.write(to: url, options: [.atomic, .completeFileProtectionUnlessOpen])
+        } catch {
+            errorMessage = "Couldn't save the PDF for sharing: \(error.localizedDescription)"
+            return
+        }
 
         let activity = UIActivityViewController(activityItems: [url], applicationActivities: nil)
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let root = scene.windows.first?.rootViewController else { return }
+              let root = scene.windows.first?.rootViewController else {
+            errorMessage = "Couldn't open the share sheet right now. Try again."
+            return
+        }
         var presenting = root
         while let next = presenting.presentedViewController { presenting = next }
         presenting.present(activity, animated: true)

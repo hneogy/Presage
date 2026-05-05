@@ -13,6 +13,7 @@ struct PredictionListView: View {
     @State private var selectedFilter: PredictionFilter = .all
     @State private var selectedDetail: Prediction?
     @State private var editingPrediction: Prediction?
+    @State private var deletingPrediction: Prediction?
 
     private enum PredictionFilter: String, CaseIterable {
         case all = "All"
@@ -24,7 +25,8 @@ struct PredictionListView: View {
             case .all: return true
             case .overdue: return prediction.isDue
             case .thisWeek:
-                let weekFromNow = Calendar.current.date(byAdding: .day, value: 7, to: .now)!
+                let weekFromNow = Calendar.current.date(byAdding: .day, value: 7, to: .now)
+                    ?? Date(timeIntervalSinceNow: 7 * 86400)
                 return prediction.resolutionDate <= weekFromNow
             }
         }
@@ -37,9 +39,10 @@ struct PredictionListView: View {
     private var overdue: [Prediction] { filtered.filter { $0.isDue } }
 
     private var thisWeek: [Prediction] {
-        filtered.filter {
-            !$0.isDue &&
-            $0.resolutionDate <= Calendar.current.date(byAdding: .day, value: 7, to: .now)!
+        let cutoff = Calendar.current.date(byAdding: .day, value: 7, to: .now)
+            ?? Date(timeIntervalSinceNow: 7 * 86400)
+        return filtered.filter {
+            !$0.isDue && $0.resolutionDate <= cutoff
         }
     }
 
@@ -92,6 +95,23 @@ struct PredictionListView: View {
         }
         .sheet(item: $editingPrediction) { prediction in
             EditPredictionSheet(prediction: prediction)
+        }
+        .confirmationDialog(
+            "Delete prediction?",
+            isPresented: Binding(
+                get: { deletingPrediction != nil },
+                set: { if !$0 { deletingPrediction = nil } }
+            ),
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let prediction = deletingPrediction {
+                    engine.deletePrediction(prediction, in: context)
+                    deletingPrediction = nil
+                }
+            }
+        } message: {
+            Text("This will permanently remove this prediction and its history.")
         }
         .onAppear {
             // Honor any pending deep link / Spotlight tap that landed on
@@ -159,7 +179,8 @@ struct PredictionListView: View {
         case .all: return activePredictions.count
         case .overdue: return activePredictions.filter { $0.isDue }.count
         case .thisWeek:
-            let w = Calendar.current.date(byAdding: .day, value: 7, to: .now)!
+            let w = Calendar.current.date(byAdding: .day, value: 7, to: .now)
+                ?? Date(timeIntervalSinceNow: 7 * 86400)
             return activePredictions.filter { $0.resolutionDate <= w }.count
         }
     }
@@ -189,13 +210,6 @@ struct PredictionListView: View {
                                     selectedDetail = prediction
                                 }
                             }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                                Button(role: .destructive) {
-                                    engine.deletePrediction(prediction, in: context)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
-                            }
                             .contextMenu {
                                 Button {
                                     selectedDetail = prediction
@@ -210,7 +224,7 @@ struct PredictionListView: View {
                                     }
                                 }
                                 Button(role: .destructive) {
-                                    engine.deletePrediction(prediction, in: context)
+                                    deletingPrediction = prediction
                                 } label: {
                                     Label("Delete", systemImage: "trash")
                                 }
@@ -244,10 +258,22 @@ struct PredictionListItem: View {
             }
 
             VStack(alignment: .leading, spacing: 8) {
-                Text(prediction.claim)
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(DS.Palette.textPrimary)
-                    .lineLimit(2)
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(prediction.claim)
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(DS.Palette.textPrimary)
+                        .lineLimit(2)
+
+                    if isOverdue && differentiate {
+                        // Differentiate-Without-Color users can't rely on
+                        // the coral border to mark overdue items, so we
+                        // surface a glyph alongside the claim.
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(DS.Palette.accentSecondary)
+                            .accessibilityHidden(true)
+                    }
+                }
 
                 HStack(spacing: 10) {
                     HStack(spacing: 4) {

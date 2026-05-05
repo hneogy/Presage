@@ -25,8 +25,19 @@ enum RecurrenceEngine {
     private static func shouldSpawn(template: PredictionTemplate, now: Date) -> Bool {
         guard now >= template.startDate else { return false }
         guard let last = template.lastSpawnedAt else { return true }
-        let interval = TimeInterval(template.recurrence.intervalDays * 86400)
-        return now.timeIntervalSince(last) >= interval - 60
+
+        // For monthly recurrence, fixed-interval seconds drift across
+        // 28/30/31-day months. Use Calendar arithmetic so "monthly" means
+        // "same day next month" the way users read it. Other patterns are
+        // exact-day cadences and remain interval-based.
+        switch template.recurrence {
+        case .monthly:
+            let nextDue = Calendar.current.date(byAdding: .month, value: 1, to: last) ?? last
+            return now >= nextDue.addingTimeInterval(-60)
+        case .daily, .weekly, .biweekly:
+            let interval = TimeInterval(template.recurrence.intervalDays * 86400)
+            return now.timeIntervalSince(last) >= interval - 60
+        }
     }
 
     @MainActor
@@ -41,5 +52,15 @@ enum RecurrenceEngine {
             templateID: template.id
         )
         context.insert(prediction)
+
+        PariEngine.recordCreation()
+
+        Task {
+            await NotificationScheduler.shared.scheduleResolutionReminder(for: prediction)
+            await SpotlightIndexer.index(prediction)
+            LiveActivityManager.startActivity(for: prediction)
+        }
+
+        WidgetReloader.reloadAll()
     }
 }

@@ -124,8 +124,22 @@ enum ConfidenceLevel {
     static let min = 50
     static let max = 99
 
+    /// Round a confidence value to the nearest allowed step. At exact
+    /// midpoints (e.g. 52 between 50 and 55, 57 between 55 and 60) we
+    /// round UP toward the higher-confidence bucket — without an
+    /// explicit tie-breaker, `min(by:)`'s natural behavior with a `<`
+    /// strict comparator returned the first equidistant match in
+    /// `allSteps`, which is always the lower step. That introduced a
+    /// systematic bias toward lower confidence on edge inputs.
     static func snap(_ value: Int) -> Int {
-        allSteps.min(by: { abs($0 - value) < abs($1 - value) }) ?? 50
+        allSteps.min(by: { lhs, rhs in
+            let dl = abs(lhs - value)
+            let dr = abs(rhs - value)
+            if dl != dr { return dl < dr }
+            // Tie: prefer the higher step. lhs > rhs means lhs "wins"
+            // the comparator (returned true => lhs is preferred).
+            return lhs > rhs
+        }) ?? 50
     }
 
     static func verbalLabel(for confidence: Int) -> String {

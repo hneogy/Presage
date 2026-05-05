@@ -167,7 +167,13 @@ struct FlashCardView: View {
         } else {
             card.averageBrierScore = brier
         }
-        try? context.save()
+        // Roll back the in-memory mutations on save failure so the next
+        // review of this card doesn't double-count a review that never
+        // persisted. Better to drop the haptic + advance than to lie to
+        // the user about progress.
+        guard PariPersistence.attemptSave(context, label: "flashcard review") else {
+            return
+        }
         HapticEngine.shared.resolutionReveal()
 
         withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
@@ -207,8 +213,14 @@ struct FlashCardEditor: View {
                     PariButton("Add card") {
                         let card = FlashCard(front: front, back: back, deckName: deckName)
                         context.insert(card)
-                        try? context.save()
-                        dismiss()
+                        if PariPersistence.attemptSave(context, label: "add flashcard") {
+                            dismiss()
+                        } else {
+                            // Roll back so we don't leave an unsaved
+                            // model attached to the context — the user
+                            // can retry without dupes.
+                            context.delete(card)
+                        }
                     }
                     .opacity(canSave ? 1 : 0.4)
                     .disabled(!canSave)

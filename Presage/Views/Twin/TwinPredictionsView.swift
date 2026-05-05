@@ -108,7 +108,14 @@ struct TwinPredictionsView: View {
             tags: ["twin"]
         )
         context.insert(prediction)
-        try? context.save()
+        guard PariPersistence.attemptSave(context, label: "twin prediction") else {
+            // Don't surface the share sheet if the prediction never
+            // landed in storage — sharing an invite that promises a
+            // tracked twin would silently lie if the underlying save
+            // failed.
+            context.delete(prediction)
+            return
+        }
 
         // Share invite
         let invite = """

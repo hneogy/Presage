@@ -9,6 +9,16 @@ enum QualityChecker {
     ]
 
     static func assess(claim: String, criteria: String) -> QualityFlag {
+        // Identity-check FIRST. Even a short claim that's identical to
+        // the criteria is unambiguously vague — and reordering this
+        // ahead of the length gate means we still flag it for users who
+        // happened to make both sides shorter than 10 characters.
+        let trimmedClaim = claim.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedCriteria = criteria.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedClaim.isEmpty, trimmedClaim.caseInsensitiveCompare(trimmedCriteria) == .orderedSame {
+            return .vague
+        }
+
         if claim.count < 10 || criteria.count < 10 {
             return .vague
         }
@@ -16,10 +26,6 @@ enum QualityChecker {
         let combined = (claim + " " + criteria).lowercased()
         let vagueHits = vaguePatterns.filter { combined.contains($0) }.count
         if vagueHits >= 3 {
-            return .vague
-        }
-
-        if criteria.trimmingCharacters(in: .whitespacesAndNewlines) == claim.trimmingCharacters(in: .whitespacesAndNewlines) {
             return .vague
         }
 

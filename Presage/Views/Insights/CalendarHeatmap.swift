@@ -92,17 +92,28 @@ struct CalendarHeatmap: View {
     }
 
     private var legend: some View {
+        // 10×10 swatches are below the 44×44 touch-target minimum, but
+        // these are decorative-only — the legend never becomes
+        // tappable. If a future revision adds tap-to-filter behaviour
+        // here, swap to PariChip-sized hit targets so the touch targets
+        // grow back to 32+pt.
         HStack(spacing: 6) {
             Text("Less")
                 .font(.system(size: 10))
                 .foregroundStyle(DS.Palette.textTertiary)
             Rectangle().fill(DS.Palette.surfaceTertiary).frame(width: 10, height: 10).cornerRadius(2)
+                .accessibilityHidden(true)
             Rectangle().fill(DS.Palette.accent.opacity(0.5)).frame(width: 10, height: 10).cornerRadius(2)
+                .accessibilityHidden(true)
             Rectangle().fill(DS.Palette.accent).frame(width: 10, height: 10).cornerRadius(2)
+                .accessibilityHidden(true)
             Rectangle().fill(DS.Palette.accentSecondary).frame(width: 10, height: 10).cornerRadius(2)
+                .accessibilityHidden(true)
             Text("More / worse")
                 .font(.system(size: 10))
                 .foregroundStyle(DS.Palette.textTertiary)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Legend: less to more, or worse")
     }
 }

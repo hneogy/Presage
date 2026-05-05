@@ -25,6 +25,23 @@ final class CloudSyncManager {
     /// reach the same schema constant without a main-actor hop.
     static var canonicalSchema: Schema { PariSchema.canonical }
 
+    /// Process-wide cached container for non-app-host call sites such as
+    /// App Intents, where re-creating the container per invocation would
+    /// burn memory, register duplicate CloudKit subscriptions, and slow
+    /// every Shortcut invocation. Built lazily on first request.
+    private static var cachedContainer: ModelContainer?
+
+    /// Returns the cached container (building it on first call) — call
+    /// from App Intents and other ephemeral entry points. Use
+    /// `makeContainer()` directly only when you specifically need a fresh
+    /// container (e.g., the host app's `@main` init).
+    static func sharedContainer() -> ModelContainer {
+        if let cached = cachedContainer { return cached }
+        let built = makeContainer()
+        cachedContainer = built
+        return built
+    }
+
     /// Build a ModelContainer using the user's current sync preference.
     /// Three-tier fallback: cloud-or-local → local-only → in-memory.
     /// Migration failure should never crash the app on first launch.
@@ -34,22 +51,35 @@ final class CloudSyncManager {
     /// Pre-pass-14 they read separate stores — widgets always empty.
     static func makeContainer() -> ModelContainer {
         let cloudEnabled = UserDefaults.standard.bool(forKey: "cloudSyncEnabled")
+        let plan = PariSchema.migrationPlan
 
         let primary = PariSharedStore.sharedConfiguration(cloudKit: cloudEnabled)
-        if let container = try? ModelContainer(for: canonicalSchema, configurations: [primary]) {
+        if let container = try? ModelContainer(
+            for: canonicalSchema,
+            migrationPlan: plan,
+            configurations: [primary]
+        ) {
             return container
         }
 
         // Tier 2 — local-only fallback (CloudKit may have failed to authorize).
         let local = PariSharedStore.sharedConfiguration(cloudKit: false)
-        if let container = try? ModelContainer(for: canonicalSchema, configurations: [local]) {
+        if let container = try? ModelContainer(
+            for: canonicalSchema,
+            migrationPlan: plan,
+            configurations: [local]
+        ) {
             return container
         }
 
         // Tier 3 — in-memory only. Loses persistence this launch but keeps
         // the app launchable. The user can retry; we never crash.
         let memory = ModelConfiguration(schema: canonicalSchema, isStoredInMemoryOnly: true)
-        if let container = try? ModelContainer(for: canonicalSchema, configurations: [memory]) {
+        if let container = try? ModelContainer(
+            for: canonicalSchema,
+            migrationPlan: plan,
+            configurations: [memory]
+        ) {
             return container
         }
 
@@ -57,7 +87,7 @@ final class CloudSyncManager {
         // SDK is broken; falling through to a trap here is the only
         // option, but every plausible failure mode has been handled above.
         do {
-            return try ModelContainer(for: canonicalSchema)
+            return try ModelContainer(for: canonicalSchema, migrationPlan: plan)
         } catch {
             fatalError("SwiftData container creation failed at every fallback tier: \(error)")
         }

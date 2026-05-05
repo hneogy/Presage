@@ -27,31 +27,82 @@ enum MarkdownVaultExporter {
         let fm = FileManager.default
         cleanupOlderExports(in: fm.temporaryDirectory, fm: fm)
 
+        // Suffix the per-export directory with a UUID rather than just
+        // the wall clock — two exports inside the same second won't
+        // collide, and a hostile process on the device can't predict
+        // the path well enough to land a TOCTOU swap before our
+        // createDirectory call lands.
         let stamp = Int(Date().timeIntervalSince1970)
-        let dir = fm.temporaryDirectory.appendingPathComponent("pari-vault-\(stamp)", isDirectory: true)
+        let unique = UUID().uuidString.prefix(8)
+        let dir = fm.temporaryDirectory.appendingPathComponent(
+            "pari-vault-\(stamp)-\(unique)",
+            isDirectory: true
+        )
         try fm.createDirectory(at: dir, withIntermediateDirectories: true)
 
-        for file in export(predictions: predictions, snapshot: snapshot) {
-            let url = dir.appendingPathComponent(file.filename)
-            try file.content.write(to: url, atomically: true, encoding: .utf8)
+        // If any file write fails, scrub the partial directory so we
+        // don't leave half-written exports in /tmp masquerading as
+        // completed vaults the user might re-open.
+        do {
+            for file in export(predictions: predictions, snapshot: snapshot) {
+                let url = dir.appendingPathComponent(file.filename)
+                try file.content.write(to: url, atomically: true, encoding: .utf8)
+            }
+        } catch {
+            try? fm.removeItem(at: dir)
+            throw error
         }
         return dir
     }
 
+    /// Remove vault directories older than 24 hours; the user has
+    /// already shared what they wanted out of /tmp by then. Older
+    /// scans were "kill everything matching pari-vault-*", which is
+    /// fine but doesn't guard against a future bug where the most
+    /// recent vault hasn't been shared yet — gate on age instead.
     private static func cleanupOlderExports(in tmp: URL, fm: FileManager) {
-        guard let contents = try? fm.contentsOfDirectory(at: tmp, includingPropertiesForKeys: nil) else { return }
+        guard let contents = try? fm.contentsOfDirectory(
+            at: tmp,
+            includingPropertiesForKeys: [.creationDateKey]
+        ) else { return }
+        let cutoff = Date().addingTimeInterval(-24 * 60 * 60)
         for url in contents where url.lastPathComponent.hasPrefix("pari-vault-") {
+            let created = (try? url.resourceValues(forKeys: [.creationDateKey]))?.creationDate
+            if let created, created > cutoff { continue }
             try? fm.removeItem(at: url)
         }
     }
 
     // MARK: - File generators
 
+    /// Whitelist filename sanitizer. Any character that isn't a letter,
+    /// digit, space, dash, or underscore becomes `-`, then we collapse
+    /// runs and strip leading dots to neutralize `..`, `.git`, hidden
+    /// files, and Windows path tricks (`\`, drive letters, reserved
+    /// names). The UUID suffix guarantees uniqueness even if two claims
+    /// sanitize to the same string.
+    private static func sanitizeForFilename(_ raw: String) -> String {
+        let allowed: Set<Character> = Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -_")
+        var cleaned = raw.map { allowed.contains($0) ? $0 : "-" }.reduce(into: "") { acc, ch in
+            // Collapse runs of dashes so "I/O/foo" doesn't become "I-O-foo"-with-runs.
+            if ch == "-", acc.last == "-" { return }
+            acc.append(ch)
+        }
+        // Trim leading dashes/spaces/dots so the filename can't start
+        // with `.` (hidden) or `-` (mistaken for a CLI flag in scripts
+        // that walk the export).
+        while let first = cleaned.first, first == "-" || first == " " || first == "." {
+            cleaned.removeFirst()
+        }
+        // Trim trailing whitespace/dashes for cleanliness.
+        while let last = cleaned.last, last == "-" || last == " " || last == "." {
+            cleaned.removeLast()
+        }
+        return cleaned.isEmpty ? "prediction" : String(cleaned.prefix(60))
+    }
+
     private static func predictionFile(_ p: Prediction) -> ExportedFile {
-        let safeName = p.claim
-            .replacingOccurrences(of: "/", with: "-")
-            .replacingOccurrences(of: ":", with: "-")
-            .prefix(60)
+        let safeName = sanitizeForFilename(p.claim)
         let filename = "\(safeName)-\(p.id.uuidString.prefix(8)).md"
         let outcomeStr = p.outcome?.rawValue ?? "unresolved"
         let resolvedStr = p.resolvedAt?.formatted(.iso8601) ?? "null"
@@ -103,7 +154,12 @@ enum MarkdownVaultExporter {
 
     private static func indexFile(predictions: [Prediction], snapshot: CalibrationSnapshot?) -> ExportedFile {
         var content = "# Présage Vault\n\n"
-        content += "Exported \(Date.now.formatted(.dateTime.year().month(.wide).day().hour().minute()))  \n"
+        // Pin the export timestamp to ISO 8601 so vaults shared between
+        // users — or version-controlled across machines — don't shift
+        // month names from English to Arabic/Japanese/etc. with the
+        // exporter's locale. Frontmatter dates already use ISO 8601;
+        // the index header was the last locale-leaky surface.
+        content += "Exported \(Date.now.formatted(.iso8601))  \n"
         content += "Total predictions: \(predictions.count)\n\n"
         if let snap = snapshot, let brier = snap.brierScore {
             content += "## Brier Score: \(PariFormat.brier(brier))\n"
@@ -114,7 +170,10 @@ enum MarkdownVaultExporter {
         for cat in PredictionCategory.allCases where byCategory[cat] != nil {
             content += "## \(cat.displayName)\n\n"
             for p in byCategory[cat] ?? [] {
-                let safeName = p.claim.prefix(60)
+                // Use the same sanitized filename root as predictionFile()
+                // so the [[wikilink]] in index.md actually resolves to the
+                // generated .md file.
+                let safeName = sanitizeForFilename(p.claim)
                 content += "- [[\(safeName)-\(p.id.uuidString.prefix(8))]] · \(p.confidencePercent)%\n"
             }
             content += "\n"

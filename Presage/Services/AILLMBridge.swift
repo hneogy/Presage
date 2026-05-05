@@ -1,14 +1,21 @@
 import Foundation
+import Security
 
 /// Bridge to user-supplied LLMs. The user provides their own API key
-/// (stored in Keychain only) — Pari never proxies through a server.
+/// (stored in Keychain) — Pari never proxies through a server.
 /// Used by Human-vs-AI Duels and Pari for AI scoring.
 @MainActor
 final class AILLMBridge {
     static let shared = AILLMBridge()
 
-    private let keychainKeyOpenAI = "pari.openai.apikey"
-    private let keychainKeyAnthropic = "pari.anthropic.apikey"
+    private let keychainServiceOpenAI = "com.pari.neogy.openai.apikey"
+    private let keychainServiceAnthropic = "com.pari.neogy.anthropic.apikey"
+
+    /// In-memory cache so repeated calls (UI re-renders, hasKey checks
+    /// during list scrolls) don't hit the synchronous Keychain API on
+    /// every read. Invalidated on store/migration so a freshly saved
+    /// key surfaces immediately.
+    private var keyCache: [AIModel: String?] = [:]
 
     enum BridgeError: Error {
         case noAPIKey
@@ -25,13 +32,59 @@ final class AILLMBridge {
     }
 
     func storeAPIKey(_ key: String, for model: AIModel) {
-        let storageKey = model == .gpt5 ? keychainKeyOpenAI : keychainKeyAnthropic
-        UserDefaults.standard.set(key, forKey: storageKey)
+        let service = model == .gpt5 ? keychainServiceOpenAI : keychainServiceAnthropic
+        let data = Data(key.utf8)
+
+        // Delete any existing entry first
+        let deleteQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service
+        ]
+        SecItemDelete(deleteQuery as CFDictionary)
+
+        let addQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+        ]
+        SecItemAdd(addQuery as CFDictionary, nil)
+        keyCache[model] = key
+
+        // Migrate: remove any legacy UserDefaults entry
+        let legacyKey = model == .gpt5 ? "pari.openai.apikey" : "pari.anthropic.apikey"
+        UserDefaults.standard.removeObject(forKey: legacyKey)
     }
 
     func apiKey(for model: AIModel) -> String? {
-        let storageKey = model == .gpt5 ? keychainKeyOpenAI : keychainKeyAnthropic
-        return UserDefaults.standard.string(forKey: storageKey)
+        if let cached = keyCache[model] { return cached }
+
+        let service = model == .gpt5 ? keychainServiceOpenAI : keychainServiceAnthropic
+
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: service,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        if status == errSecSuccess, let data = result as? Data {
+            let key = String(data: data, encoding: .utf8)
+            keyCache[model] = key
+            return key
+        }
+
+        // Migration: check legacy UserDefaults and move to Keychain
+        let legacyKey = model == .gpt5 ? "pari.openai.apikey" : "pari.anthropic.apikey"
+        if let legacy = UserDefaults.standard.string(forKey: legacyKey) {
+            storeAPIKey(legacy, for: model)
+            return legacy
+        }
+
+        keyCache[model] = nil
+        return nil
     }
 
     /// Stub: in production this hits the model's chat completion endpoint

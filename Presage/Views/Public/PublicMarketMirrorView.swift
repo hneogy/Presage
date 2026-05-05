@@ -55,6 +55,12 @@ struct PublicMarketMirrorView: View {
                 hideBranding = RegionGeofence.shouldHidePredictionMarketBranding()
             })
         }
+        .onAppear {
+            // Re-read region in case the user changed their state
+            // through some other entry point (Settings, Shortcuts) since
+            // this view was last shown.
+            hideBranding = RegionGeofence.shouldHidePredictionMarketBranding()
+        }
     }
 
     private var header: some View {

@@ -34,30 +34,46 @@ final class AppleSignInManager {
     /// the call never hangs forever if the system never invokes the
     /// callback (which has happened in the wild on flaky network/iCloud
     /// states).
-    func validateExistingCredential() async -> Bool {
+    ///
+    /// Returns nil on timeout — callers should treat that as
+    /// "indeterminate, leave existing iCloud sync state alone" rather
+    /// than the previous behaviour which returned `false` and could
+    /// silently sign the user out when the system was just slow.
+    func validateExistingCredential() async -> Bool? {
         guard let userID = signedInUserID else { return false }
         let provider = ASAuthorizationAppleIDProvider()
 
-        return await withTaskGroup(of: Bool.self) { group in
+        // Bridge the callback to an async value with a one-shot guard
+        // so a late callback can't race the timeout. The result enum
+        // distinguishes "system answered authorized/revoked" from "the
+        // 5-second ceiling fired first" — the caller decides which is
+        // load-bearing.
+        enum Outcome { case authorized, revoked, timedOut }
+
+        let outcome: Outcome = await withTaskGroup(of: Outcome.self) { group in
             group.addTask {
                 await withCheckedContinuation { continuation in
                     var resumed = false
                     provider.getCredentialState(forUserID: userID) { state, _ in
-                        if !resumed {
-                            resumed = true
-                            continuation.resume(returning: state == .authorized)
-                        }
+                        guard !resumed else { return }
+                        resumed = true
+                        continuation.resume(returning: state == .authorized ? .authorized : .revoked)
                     }
                 }
             }
             group.addTask {
-                // 5-second ceiling.
                 try? await Task.sleep(for: .seconds(5))
-                return false
+                return .timedOut
             }
-            let result = await group.next() ?? false
+            let first = await group.next() ?? .timedOut
             group.cancelAll()
-            return result
+            return first
+        }
+
+        switch outcome {
+        case .authorized: return true
+        case .revoked:    return false
+        case .timedOut:   return nil
         }
     }
 }

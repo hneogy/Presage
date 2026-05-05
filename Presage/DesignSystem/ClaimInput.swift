@@ -22,6 +22,8 @@ struct ClaimInput: View {
                 text: $text,
                 isMultiline: true
             )
+            .accessibilityLabel("Prediction claim")
+            .accessibilityHint("Describe what you think will happen")
 
             HStack(spacing: 10) {
                 flipButton

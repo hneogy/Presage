@@ -75,12 +75,45 @@ struct CSVImportView: View {
 
     private func handlePicked(_ result: Result<[URL], Error>) {
         guard case .success(let urls) = result, let url = urls.first else { return }
-        guard url.startAccessingSecurityScopedResource() else { return }
+        guard url.startAccessingSecurityScopedResource() else {
+            resultMessage = "Couldn't access this file. Try moving it to the Files app first."
+            return
+        }
         defer { url.stopAccessingSecurityScopedResource() }
 
-        guard let data = try? Data(contentsOf: url),
-              let csv = String(data: data, encoding: .utf8) else {
-            resultMessage = "Couldn't read file."
+        guard let data = try? Data(contentsOf: url) else {
+            resultMessage = "Couldn't read this file. It may be in use by another app."
+            return
+        }
+
+        // Reject files above the importer's hard ceiling before we
+        // allocate a String for them — String(data:encoding:) doubles
+        // memory for UTF-16 and we don't want a careless drop-in to OOM
+        // the device.
+        if data.count > CSVImporter.maxCSVBytes {
+            resultMessage = "This CSV is too large (over 50 MB). Try splitting it before importing."
+            return
+        }
+
+        // Try the most common encodings before giving up. Excel on Windows
+        // often emits Windows-1252 or UTF-16-LE; macOS Numbers and Google
+        // Sheets default to UTF-8.
+        let encodings: [(String.Encoding, String)] = [
+            (.utf8, "UTF-8"),
+            (.utf16, "UTF-16"),
+            (.utf16LittleEndian, "UTF-16 LE"),
+            (.windowsCP1252, "Windows-1252"),
+            (.isoLatin1, "ISO-8859-1")
+        ]
+        var csv: String? = nil
+        for (enc, _) in encodings {
+            if let s = String(data: data, encoding: enc), !s.isEmpty {
+                csv = s
+                break
+            }
+        }
+        guard let csv else {
+            resultMessage = "Couldn't decode this file. Try re-saving it as UTF-8 CSV in your spreadsheet app."
             return
         }
 
@@ -92,7 +125,13 @@ struct CSVImportView: View {
         case .generic: formatName = "Generic CSV"
         case .unknown: formatName = "Unknown format"
         }
-        resultMessage = "Imported \(r.imported) predictions from \(formatName). Skipped \(r.skipped) rows."
+        if r.imported == 0 && r.skipped > 0 {
+            resultMessage = "Couldn't read any predictions from this file. \(r.skipped) rows skipped — check that there's a `claim` or `question` column."
+        } else if r.skipped > 0 {
+            resultMessage = "Imported \(r.imported) predictions from \(formatName). Skipped \(r.skipped) rows that were missing required columns."
+        } else {
+            resultMessage = "Imported \(r.imported) predictions from \(formatName)."
+        }
         HapticService.success()
     }
 }

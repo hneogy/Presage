@@ -3,7 +3,10 @@ import SwiftData
 
 struct LeaderboardView: View {
     @Environment(\.colorScheme) private var colorScheme
-    @State private var leaderboard = LeaderboardService.shared
+    // The singleton is `@Observable`; binding to it ensures the view
+    // reacts to mutations performed elsewhere (e.g., a deep-link or
+    // intent toggling opt-in state).
+    @Bindable private var leaderboard = LeaderboardService.shared
 
     @Query(filter: #Predicate<CalibrationSnapshot> { _ in true },
            sort: \CalibrationSnapshot.computedAt, order: .reverse)

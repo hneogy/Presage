@@ -14,6 +14,7 @@ struct AIScoringView: View {
     @State private var aiModel: AIModel = .claude46
     @State private var userConfidence: Int = 70
     @State private var aiSelfConfidence: Int? = nil
+    @State private var saveErrorMessage: String? = nil
 
     @Query(sort: \AIPrediction.createdAt, order: .reverse)
     private var aiPredictions: [AIPrediction]
@@ -53,6 +54,14 @@ struct AIScoringView: View {
         .background(DS.Atmosphere.predict(colorScheme))
         .navigationTitle("Présage for AI")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Couldn't save", isPresented: Binding(
+            get: { saveErrorMessage != nil },
+            set: { if !$0 { saveErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { saveErrorMessage = nil }
+        } message: {
+            Text(saveErrorMessage ?? "")
+        }
     }
 
     private var header: some View {
@@ -219,7 +228,15 @@ struct AIScoringView: View {
             userConfidence: userConfidence
         )
         context.insert(pred)
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            // Roll back the insert so the @Query doesn't surface a
+            // half-saved record.
+            context.delete(pred)
+            saveErrorMessage = "Couldn't save this AI prediction: \(error.localizedDescription)"
+            return
+        }
         question = ""
         aiAnswer = ""
         userConfidence = 70
@@ -239,7 +256,12 @@ struct AIScoringView: View {
                 outcome: correct
             )
         }
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            saveErrorMessage = "Couldn't record the resolution: \(error.localizedDescription)"
+            return
+        }
         HapticEngine.shared.resolutionReveal()
     }
 }

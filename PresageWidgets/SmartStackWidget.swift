@@ -69,6 +69,24 @@ struct SmartStackProvider: TimelineProvider {
 struct SmartStackWidgetView: View {
     let entry: SmartStackEntry
 
+    /// Tap target. When there's a prediction, deep-link to its
+    /// resolution flow; otherwise drop the user into the new-prediction
+    /// flow so the widget is never a dead tap.
+    private var widgetTapURL: URL {
+        if let id = entry.predictionID, let url = URL(string: "pari://resolve/\(id)") {
+            return url
+        }
+        return URL(string: "pari://new") ?? URL(string: "pari://home")!
+    }
+
+    private var accessibilitySummary: String {
+        guard let claim = entry.claim, let pct = entry.confidencePercent else {
+            return "Présage Smart Stack — no active predictions. Tap to make one."
+        }
+        let state = entry.isOverdue ? "Resolve now" : "Due soon"
+        return "\(state): \(claim). \(pct) percent confidence. Tap to resolve."
+    }
+
     var body: some View {
         ZStack {
             // Dynamic gradient background — coral when overdue, teal otherwise
@@ -111,6 +129,9 @@ struct SmartStackWidgetView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .containerBackground(.fill.tertiary, for: .widget)
+        .widgetURL(widgetTapURL)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilitySummary)
     }
 }
 

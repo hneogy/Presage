@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import AuthenticationServices
 
 struct SettingsSheet: View {
@@ -8,8 +9,12 @@ struct SettingsSheet: View {
     @AppStorage("preferredColorScheme") private var preferredScheme = 0
     @AppStorage("cloudSyncEnabled") private var cloudSyncEnabled = false
     @AppStorage("healthKitMoodEnabled") private var healthKitEnabled = false
+    @AppStorage("spotlightIndexingEnabled") private var spotlightIndexingEnabled = true
+    @AppStorage("notificationPreviewsEnabled") private var notificationPreviewsEnabled = true
+    @AppStorage(PariSharedStore.appGroupFallbackFlagKey) private var widgetSyncBroken = false
     @State private var showRestartAlert = false
     @State private var showEraseConfirm = false
+    @State private var showHealthKitDeniedAlert = false
 
     var body: some View {
         List {
@@ -31,6 +36,23 @@ struct SettingsSheet: View {
                 }
                 .foregroundStyle(DS.Palette.accent)
                 .listRowBackground(DS.Palette.surfaceSecondary)
+            }
+
+            if widgetSyncBroken {
+                Section {
+                    HStack(alignment: .top, spacing: DS.Space.sm) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundStyle(DS.Palette.accentSecondary)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Widgets aren't syncing")
+                                .font(.subheadline.weight(.semibold))
+                            Text("The shared App Group container couldn't be opened. Reinstall to restore widget data.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .listRowBackground(DS.Palette.surfaceSecondary)
+                }
             }
 
             Section {
@@ -74,21 +96,48 @@ struct SettingsSheet: View {
                 }
                 .listRowBackground(DS.Palette.surfaceSecondary)
                 .onChange(of: healthKitEnabled) { _, newValue in
-                    // Only prompt the first time the toggle is turned on.
-                    // After that, the system already remembers the user's
-                    // choice; toggling on/off shouldn't keep re-prompting.
+                    guard newValue else { return }
+                    // Only prompt the first time. If the user previously
+                    // denied, iOS won't re-prompt — explain that and link
+                    // them to system Settings rather than silently no-op.
                     let alreadyRequested = UserDefaults.standard.bool(forKey: "healthKitAuthRequested")
-                    if newValue && !alreadyRequested {
+                    if !alreadyRequested {
                         Task {
                             _ = await HealthKitMoodSync.shared.requestAuthorization()
                             UserDefaults.standard.set(true, forKey: "healthKitAuthRequested")
                         }
+                    } else {
+                        showHealthKitDeniedAlert = true
                     }
                 }
             } header: {
                 Text("Health")
             } footer: {
                 Text("Pre-fill mood when creating predictions, on-device only.")
+            }
+
+            Section {
+                Toggle(isOn: $spotlightIndexingEnabled) {
+                    Label("Search predictions in Spotlight", systemImage: "magnifyingglass")
+                }
+                .listRowBackground(DS.Palette.surfaceSecondary)
+                .onChange(of: spotlightIndexingEnabled) { _, newValue in
+                    if !newValue {
+                        // User just turned indexing off — purge what we
+                        // already wrote so a sensitive claim doesn't keep
+                        // surfacing in Spotlight after they opted out.
+                        Task { await SpotlightIndexer.purgeAllIndexedContent() }
+                    }
+                }
+
+                Toggle(isOn: $notificationPreviewsEnabled) {
+                    Label("Show claim preview in notifications", systemImage: "lock.shield")
+                }
+                .listRowBackground(DS.Palette.surfaceSecondary)
+            } header: {
+                Text("Privacy")
+            } footer: {
+                Text("Spotlight indexes the full claim and criteria. Notification previews include the first 50 characters of the claim on the lock screen. Disable either if your predictions are sensitive.")
             }
 
             Section("About") {
@@ -108,21 +157,36 @@ struct SettingsSheet: View {
                 }
                 .listRowBackground(DS.Palette.surfaceSecondary)
 
-                Link(destination: URL(string: "https://neogy.dev/")!) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Developer")
-                                .foregroundStyle(DS.Palette.textPrimary)
-                            Text("Honorius M. Neogy (The Honorius M. Neogy)")
-                                .font(.caption)
-                                .foregroundStyle(DS.Palette.textSecondary)
+                if let devURL = URL(string: "https://neogy.dev/") {
+                    Link(destination: devURL) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Developer")
+                                    .foregroundStyle(DS.Palette.textPrimary)
+                                Text("Honorius M. Neogy (The Honorius M. Neogy)")
+                                    .font(.caption)
+                                    .foregroundStyle(DS.Palette.textSecondary)
+                            }
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                                .foregroundStyle(DS.Palette.accent)
                         }
-                        Spacer()
-                        Image(systemName: "arrow.up.right.square")
-                            .foregroundStyle(DS.Palette.accent)
                     }
+                    .listRowBackground(DS.Palette.surfaceSecondary)
+                } else {
+                    // Hardcoded URL is well-formed today — this branch
+                    // exists so a future typo can't crash the row by
+                    // landing on `URL(fileURLWithPath: "/")`.
+                    HStack {
+                        Text("Developer")
+                            .foregroundStyle(DS.Palette.textPrimary)
+                        Spacer()
+                        Text("Honorius M. Neogy")
+                            .font(.caption)
+                            .foregroundStyle(DS.Palette.textSecondary)
+                    }
+                    .listRowBackground(DS.Palette.surfaceSecondary)
                 }
-                .listRowBackground(DS.Palette.surfaceSecondary)
             }
 
             Section {
@@ -168,6 +232,18 @@ struct SettingsSheet: View {
             }
         } message: {
             Text("This deletes every prediction and resets onboarding. There is no undo.")
+        }
+        .alert("Health permission previously set", isPresented: $showHealthKitDeniedAlert) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                healthKitEnabled = false
+            }
+        } message: {
+            Text("iOS won't re-prompt for Health access once you've answered. Adjust Présage's permissions in Settings → Privacy → Health.")
         }
     }
 

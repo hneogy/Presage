@@ -5,6 +5,58 @@ import Foundation
 import UIKit
 #endif
 
+// MARK: - Shared post-create helper
+
+@MainActor
+private enum IntentPipeline {
+    /// Mirrors PariEngine.createPrediction's side-effect chain so that
+    /// predictions saved through Shortcuts get the same notification +
+    /// Spotlight + Live Activity + counter treatment as predictions made
+    /// in-app. We `await` rather than fire-and-forget so the intent
+    /// doesn't return success before the work that powers the user's
+    /// expectations (resolution reminder!) actually lands.
+    static func finishCreate(_ prediction: Prediction) async {
+        PariEngine.recordCreation()
+        await NotificationScheduler.shared.scheduleResolutionReminder(for: prediction)
+        await SpotlightIndexer.index(prediction)
+        LiveActivityManager.startActivity(for: prediction)
+        WidgetReloader.reloadAll()
+    }
+
+    /// Common claim sanitization. Trims whitespace, rejects strings
+    /// shorter than 5 chars (the same guard NewPredictionFlow enforces),
+    /// and caps at 500 chars to match the CSV importer's ceiling.
+    static func sanitize(claim raw: String) throws -> String {
+        let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count >= 5 else {
+            throw IntentValidationError.claimTooShort
+        }
+        return String(trimmed.prefix(500))
+    }
+
+    static func sanitize(criteria raw: String?, claim: String, resolutionDate: Date) -> String {
+        let trimmed = (raw ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.count >= 5 {
+            return String(trimmed.prefix(1000))
+        }
+        // Generate a concrete, criterion-shaped default — same shape the
+        // QuickPredict UI uses — so QualityChecker doesn't auto-flag the
+        // intent-created prediction as vague.
+        return "Did the claim '\(claim)' actually happen by \(resolutionDate.formatted(.dateTime.month(.abbreviated).day()))?"
+    }
+}
+
+enum IntentValidationError: Swift.Error, CustomLocalizedStringResourceConvertible {
+    case claimTooShort
+
+    var localizedStringResource: LocalizedStringResource {
+        switch self {
+        case .claimTooShort:
+            return "Claim must be at least 5 characters."
+        }
+    }
+}
+
 // MARK: - Shortcuts Provider
 
 struct PariShortcuts: AppShortcutsProvider {
@@ -86,6 +138,10 @@ struct QuickPredictIntent: AppIntent {
     )
     static var openAppWhenRun: Bool = true
     static var isDiscoverable: Bool = true
+    /// Writing a prediction from a Shortcut should require the same
+    /// trust boundary as opening the app — don't let a lock-screen
+    /// automation insert rows into the user's calibration history.
+    static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     static var parameterSummary: some ParameterSummary {
         Summary("Predict \(\.$claim) in Présage")
@@ -96,22 +152,37 @@ struct QuickPredictIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let container = CloudSyncManager.makeContainer()
+        let container = CloudSyncManager.sharedContainer()
         let context = container.mainContext
 
-        let inferred = await ConfidenceExtractor.extract(from: claim) ?? 70
+        let cleanedClaim = try IntentPipeline.sanitize(claim: claim)
+
+        let inferred = await ConfidenceExtractor.extract(from: cleanedClaim) ?? 70
         let resolutionDate = Calendar.current.date(byAdding: .day, value: 7, to: .now) ?? .now
+        let criteria = IntentPipeline.sanitize(
+            criteria: nil,
+            claim: cleanedClaim,
+            resolutionDate: resolutionDate
+        )
 
         let prediction = Prediction(
-            claim: claim,
-            resolutionCriteria: "I'll know it when I see it.",
+            claim: cleanedClaim,
+            resolutionCriteria: criteria,
             confidencePercent: inferred,
             resolutionDate: resolutionDate,
             category: .behavior
         )
         context.insert(prediction)
-        try? context.save()
-        await NotificationScheduler.shared.scheduleResolutionReminder(for: prediction)
+        do {
+            try context.save()
+        } catch {
+            // Roll back so the @Query in the host app doesn't surface a
+            // half-saved insert when the intent failed to persist.
+            context.delete(prediction)
+            return .result(dialog: "Couldn't save: \(error.localizedDescription)")
+        }
+
+        await IntentPipeline.finishCreate(prediction)
 
         return .result(dialog: "Locked in at \(inferred)%, resolves in 7 days.")
     }
@@ -127,6 +198,8 @@ struct CreatePredictionIntent: AppIntent {
     )
     static var openAppWhenRun: Bool = true
     static var isDiscoverable: Bool = true
+    /// Same lock-screen-write concern as QuickPredictIntent.
+    static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     static var parameterSummary: some ParameterSummary {
         Summary("Predict \(\.$claim) at \(\.$confidence)% confidence in \(\.$daysOut) days") {
@@ -152,28 +225,52 @@ struct CreatePredictionIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let container = CloudSyncManager.makeContainer()
+        let container = CloudSyncManager.sharedContainer()
         let context = container.mainContext
 
-        let resolutionDate = Calendar.current.date(byAdding: .day, value: daysOut, to: .now) ?? .now
-        let snapped = ConfidenceLevel.snap(confidence)
-        let quality = QualityChecker.assess(claim: claim, criteria: criteria)
+        let cleanedClaim = try IntentPipeline.sanitize(claim: claim)
+        let clampedDays = max(1, min(3650, daysOut))
+        let resolutionDate = Calendar.current.date(byAdding: .day, value: clampedDays, to: .now)
+            ?? Date(timeIntervalSinceNow: TimeInterval(clampedDays) * 86400)
+        let cleanedCriteria = IntentPipeline.sanitize(
+            criteria: criteria,
+            claim: cleanedClaim,
+            resolutionDate: resolutionDate
+        )
+        // Clamp to the valid 50-99 ConfidenceLevel domain BEFORE snapping
+        // so a Shortcut that passes 0, a negative value, 100, or 200
+        // doesn't snap to a meaningless edge bucket. We deliberately
+        // floor at 50 (Pari treats sub-50 confidence as a flipped claim
+        // and should be expressed by negating the claim, not by passing
+        // a low number) and ceil at 99 (100% confidence isn't meaningful
+        // — log scoring would explode).
+        let bounded: Int = {
+            if confidence < 50 { return 50 }
+            if confidence > 99 { return 99 }
+            return confidence
+        }()
+        let snapped = ConfidenceLevel.snap(bounded)
+        let quality = QualityChecker.assess(claim: cleanedClaim, criteria: cleanedCriteria)
 
         let prediction = Prediction(
-            claim: claim,
-            resolutionCriteria: criteria,
+            claim: cleanedClaim,
+            resolutionCriteria: cleanedCriteria,
             confidencePercent: snapped,
             resolutionDate: resolutionDate,
             category: .behavior,
             qualityFlag: quality
         )
         context.insert(prediction)
-        try? context.save()
+        do {
+            try context.save()
+        } catch {
+            context.delete(prediction)
+            return .result(dialog: "Couldn't save: \(error.localizedDescription)")
+        }
 
-        await NotificationScheduler.shared.scheduleResolutionReminder(for: prediction)
-        await SpotlightIndexer.index(prediction)
+        await IntentPipeline.finishCreate(prediction)
 
-        return .result(dialog: "Saved at \(snapped)% confidence, resolves in \(daysOut) days.")
+        return .result(dialog: "Saved at \(snapped)% confidence, resolves in \(clampedDays) days.")
     }
 }
 
@@ -186,10 +283,14 @@ struct ResolveNextDueIntent: AppIntent {
         categoryName: "Predictions"
     )
     static var openAppWhenRun: Bool = true
+    /// Require device unlock before this intent runs. Otherwise a
+    /// Shortcut bound to the lock screen could surface (or, with a
+    /// future variant, modify) personal predictions without auth.
+    static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let container = CloudSyncManager.makeContainer()
+        let container = CloudSyncManager.sharedContainer()
         let context = container.mainContext
 
         let now = Date.now
@@ -207,7 +308,11 @@ struct ResolveNextDueIntent: AppIntent {
             await UIApplication.shared.open(url)
         }
 
-        return .result(dialog: "Opening: \(next.claim)")
+        // Don't echo the claim into the spoken response — the unlocked
+        // user is about to see the resolution UI anyway, and a Siri
+        // confirmation that reads sensitive claim text aloud is a
+        // privacy footgun.
+        return .result(dialog: "Opening your next prediction.")
     }
 }
 
@@ -220,7 +325,7 @@ struct ViewBrierScoreIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let container = CloudSyncManager.makeContainer()
+        let container = CloudSyncManager.sharedContainer()
         let context = container.mainContext
 
         let descriptor = FetchDescriptor<CalibrationSnapshot>(
@@ -243,10 +348,15 @@ struct ResolveAllDueIntent: AppIntent {
     static var title: LocalizedStringResource = "Resolve all due predictions"
     static var description = IntentDescription("Surface all overdue predictions.")
     static var openAppWhenRun: Bool = true
+    /// See ResolveNextDueIntent: same lock-screen exposure concern, same
+    /// remediation. Surfaces a count, not claim text — but the count
+    /// alone is a privacy signal we'd rather not leak from a locked
+    /// device.
+    static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let container = CloudSyncManager.makeContainer()
+        let container = CloudSyncManager.sharedContainer()
         let context = container.mainContext
         let now = Date.now
         let descriptor = FetchDescriptor<Prediction>(
@@ -267,7 +377,7 @@ struct CompareBrierIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let container = CloudSyncManager.makeContainer()
+        let container = CloudSyncManager.sharedContainer()
         let context = container.mainContext
 
         let cal = Calendar.current

@@ -16,8 +16,15 @@ enum SundayRetrospectiveScheduler {
         content.sound = .default
         content.userInfo = ["deepLink": "pari://coach"]
 
+        // Pin to Gregorian: in non-Gregorian calendars (Hebrew, Persian)
+        // weekday numbering can differ, so reading `weekday = 1` from a
+        // user's `Calendar.current` would fire on the wrong day. We
+        // attach the Gregorian calendar to the components so the trigger
+        // resolves Sunday consistently regardless of the user's chosen
+        // calendar system.
         var components = DateComponents()
-        components.weekday = 1   // Sunday in iOS
+        components.calendar = Calendar(identifier: .gregorian)
+        components.weekday = 1   // Sunday in Gregorian
         components.hour = 19
         components.minute = 0
 

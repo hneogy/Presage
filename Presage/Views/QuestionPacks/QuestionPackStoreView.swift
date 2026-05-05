@@ -24,7 +24,16 @@ struct QuestionPackStoreView: View {
                 header
 
                 ForEach(packs) { pack in
-                    packCard(pack)
+                    NavigationLink {
+                        TrainingView()
+                            .navigationTitle(pack.name)
+                            .navigationBarTitleDisplayMode(.inline)
+                    } label: {
+                        packCard(pack)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("\(pack.name), \(pack.count) questions, \(pack.theme)")
+                    .accessibilityHint("Opens the training session for this pack")
                 }
             }
             .padding(20)

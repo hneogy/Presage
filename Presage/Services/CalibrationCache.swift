@@ -1,21 +1,27 @@
 import Foundation
 import SwiftData
 
-actor CalibrationCache {
+@MainActor
+final class CalibrationCache {
     private let modelContainer: ModelContainer
 
     init(modelContainer: ModelContainer) {
         self.modelContainer = modelContainer
     }
 
-    @MainActor
     func recompute(using context: ModelContext) throws {
+        // Resolved-only fetch. Predicate matches every other view in the
+        // app (HomeView, InsightsView, AnnualReportView, CoachView,
+        // widgets) so the snapshot's totalResolved never disagrees with
+        // what those views display. The downstream `scorable` filter
+        // excludes any record whose outcome doesn't decode to .yes/.no,
+        // which is the real safety guard against malformed data.
         let descriptor = FetchDescriptor<Prediction>(
             predicate: #Predicate<Prediction> { $0.outcomeRaw != nil }
         )
         let resolved = try context.fetch(descriptor)
 
-        let scorable = resolved.filter { !$0.isFudged && ($0.outcome == .yes || $0.outcome == .no) }
+        let scorable = resolved.filter { !$0.isFudged && !$0.isTrainingMode && ($0.outcome == .yes || $0.outcome == .no) }
 
         let snapshotDescriptor = FetchDescriptor<CalibrationSnapshot>(
             sortBy: [SortDescriptor(\.computedAt, order: .reverse)]
@@ -42,7 +48,6 @@ actor CalibrationCache {
         try context.save()
     }
 
-    @MainActor
     func recomputeIfStale(using context: ModelContext) throws {
         let snapshotDescriptor = FetchDescriptor<CalibrationSnapshot>(
             sortBy: [SortDescriptor(\.computedAt, order: .reverse)]

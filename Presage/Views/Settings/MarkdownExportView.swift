@@ -9,6 +9,7 @@ struct MarkdownExportView: View {
     @Query(sort: \CalibrationSnapshot.computedAt, order: .reverse) private var snapshots: [CalibrationSnapshot]
 
     @State private var resultMessage: String? = nil
+    @State private var lastVaultURL: URL? = nil
 
     var body: some View {
         ScrollView {
@@ -28,6 +29,12 @@ struct MarkdownExportView: View {
 
                 PariButton("Export vault") {
                     exportVault()
+                }
+
+                if let url = lastVaultURL {
+                    PariButton("Share again", style: .secondary, icon: "square.and.arrow.up") {
+                        presentShare(folder: url)
+                    }
                 }
 
                 if let msg = resultMessage {
@@ -54,17 +61,21 @@ struct MarkdownExportView: View {
         }
         do {
             let url = try MarkdownVaultExporter.writeVault(predictions: predictions, snapshot: snapshots.first)
-            resultMessage = "Vault written to: \(url.lastPathComponent)\n\nPress Share to send to Obsidian or Files."
+            lastVaultURL = url
+            resultMessage = "Vault written to: \(url.lastPathComponent). Use “Share again” below to re-send to Obsidian or Files anytime."
             presentShare(folder: url)
         } catch {
-            resultMessage = "Export failed: \(error.localizedDescription)"
+            resultMessage = "Couldn't write the vault: \(error.localizedDescription). Try again, or free up some disk space and retry."
         }
     }
 
     private func presentShare(folder: URL) {
         let activity = UIActivityViewController(activityItems: [folder], applicationActivities: nil)
         guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let root = scene.windows.first?.rootViewController else { return }
+              let root = scene.windows.first?.rootViewController else {
+            resultMessage = "Couldn't open the share sheet right now. Tap Share again to retry."
+            return
+        }
         var presenting = root
         while let next = presenting.presentedViewController { presenting = next }
         presenting.present(activity, animated: true)

@@ -50,9 +50,20 @@ struct RootTabView: View {
         .fullScreenCover(item: $engine.resolvingPrediction) { prediction in
             ResolutionFlow(prediction: prediction)
         }
-        .sheet(isPresented: $engine.showQuickPredict) {
+        .sheet(isPresented: $engine.showQuickPredict, onDismiss: {
+            if engine.pendingShowNewPrediction {
+                engine.pendingShowNewPrediction = false
+                engine.showNewPrediction = true
+            }
+        }) {
             QuickPredictSheet()
                 .presentationDetents([.large])
+        }
+        .onChange(of: engine.resolvingPrediction == nil) { _, dismissed in
+            if dismissed && engine.pendingShowNewPrediction {
+                engine.pendingShowNewPrediction = false
+                engine.showNewPrediction = true
+            }
         }
     }
 }
@@ -101,8 +112,15 @@ private struct CustomTabBar: View {
         )
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicSize
+
     private func tabButton(index: Int, tab: Tab) -> some View {
         let isSelected = selection == index
+        // Hide labels only at the largest accessibility sizes where the
+        // 10pt label clips and overlaps neighbours. AX1 and AX2 still
+        // render — sighted-but-low-vision users need the text. Above AX2
+        // the icon plus a11y label has to suffice.
+        let hideLabel = dynamicSize >= .accessibility3
 
         return Button {
             HapticService.light()
@@ -113,10 +131,12 @@ private struct CustomTabBar: View {
             VStack(spacing: 3) {
                 Image(systemName: tab.icon)
                     .font(.system(size: 15, weight: .medium))
-                Text(tab.title)
-                    .font(.system(size: 10, weight: .medium))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.85)
+                if !hideLabel {
+                    Text(tab.title)
+                        .font(.system(size: 10, weight: .medium))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.85)
+                }
             }
             .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .foregroundStyle(isSelected ? DS.Palette.darkSurfacePrimary : DS.Palette.textSecondary)
@@ -128,5 +148,7 @@ private struct CustomTabBar: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(tab.title)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
     }
 }

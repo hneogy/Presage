@@ -72,7 +72,20 @@ struct TemplatesView: View {
                     Spacer()
                     Toggle("", isOn: Binding(
                         get: { template.isActive },
-                        set: { template.isActive = $0; try? context.save() }
+                        set: { newValue in
+                            // Skip the SwiftData save when SwiftUI fires
+                            // a redundant set() with the same value —
+                            // happens on rapid taps and double-binding
+                            // round trips. Removes thrashing on the store.
+                            guard template.isActive != newValue else { return }
+                            let prior = template.isActive
+                            template.isActive = newValue
+                            if !PariPersistence.attemptSave(context, label: "toggle template active") {
+                                // Snap the toggle back so the UI doesn't
+                                // claim active state we couldn't persist.
+                                template.isActive = prior
+                            }
+                        }
                     ))
                     .labelsHidden()
                     .tint(DS.Palette.accent)
@@ -147,7 +160,15 @@ struct TemplateEditor: View {
                             horizonDays: horizonDays
                         )
                         context.insert(template)
-                        try? context.save()
+                        guard PariPersistence.attemptSave(context, label: "create template") else {
+                            // The recurrence spawner reads templates from
+                            // the store — if the template never landed,
+                            // running the spawner would do nothing useful
+                            // and the user would think they had a working
+                            // template. Roll back instead.
+                            context.delete(template)
+                            return
+                        }
                         RecurrenceEngine.spawnDuePredictions(in: context)
                         dismiss()
                     }

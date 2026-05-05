@@ -6,16 +6,33 @@ import SwiftData
 /// remote bundle; we ship a curated 30-question starter offline.
 enum TrainingPack {
 
+    /// Set once seeding succeeds so repeat calls (every TrainingView
+    /// appear, every cold start) don't re-issue a SwiftData fetch just
+    /// to confirm what UserDefaults already knows.
+    private static let seededFlagKey = "trainingPack.seeded"
+
     @MainActor
     static func seedIfNeeded(in context: ModelContext) {
+        if UserDefaults.standard.bool(forKey: seededFlagKey) { return }
         let descriptor = FetchDescriptor<TrainingQuestion>()
         let existing = (try? context.fetch(descriptor)) ?? []
         if existing.isEmpty {
             for q in starterQuestions {
                 context.insert(q)
             }
-            try? context.save()
+            do {
+                try context.save()
+            } catch {
+                // Don't set the seeded flag — another launch should
+                // retry, otherwise we'd trap the user with an empty
+                // training pack and no path to recovery.
+                for q in starterQuestions {
+                    context.delete(q)
+                }
+                return
+            }
         }
+        UserDefaults.standard.set(true, forKey: seededFlagKey)
     }
 
     static var starterQuestions: [TrainingQuestion] {

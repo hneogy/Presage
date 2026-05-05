@@ -3,6 +3,9 @@ import SwiftUI
 struct BiasEncyclopediaView: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var selected: BiasLibrary.Bias? = nil
+    /// Remember the last bias the user viewed so that returning from the
+    /// detail sheet (or relaunching the app) keeps that bias highlighted.
+    @AppStorage("lastViewedBiasID") private var lastViewedBiasID: String = ""
 
     var body: some View {
         ScrollView {
@@ -12,8 +15,9 @@ struct BiasEncyclopediaView: View {
                 ForEach(BiasLibrary.all) { bias in
                     Button {
                         selected = bias
+                        lastViewedBiasID = bias.id
                     } label: {
-                        biasCard(bias)
+                        biasCard(bias, highlighted: bias.id == lastViewedBiasID)
                     }
                     .buttonStyle(.plain)
                 }
@@ -45,12 +49,24 @@ struct BiasEncyclopediaView: View {
         }
     }
 
-    private func biasCard(_ bias: BiasLibrary.Bias) -> some View {
+    private func biasCard(_ bias: BiasLibrary.Bias, highlighted: Bool = false) -> some View {
         PariCard {
             VStack(alignment: .leading, spacing: 6) {
-                Text(bias.name)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(DS.Palette.textPrimary)
+                HStack(alignment: .firstTextBaseline) {
+                    Text(bias.name)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(DS.Palette.textPrimary)
+                    if highlighted {
+                        Text("Last viewed")
+                            .font(.system(size: 9, weight: .semibold))
+                            .kerning(1.2)
+                            .textCase(.uppercase)
+                            .foregroundStyle(DS.Palette.accent)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Capsule().fill(DS.Palette.accentMuted))
+                    }
+                }
                 Text(bias.oneLiner)
                     .font(.system(size: 13))
                     .foregroundStyle(DS.Palette.textSecondary)

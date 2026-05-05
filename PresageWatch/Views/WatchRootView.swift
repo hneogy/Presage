@@ -52,9 +52,19 @@ struct WatchRootView: View {
                 .font(.system(size: 28, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(.tint)
-            Text("\(snapshots.first?.totalResolved ?? 0) resolved")
-                .font(.system(size: 10))
-                .foregroundStyle(.secondary)
+            // Distinguish "fresh install, never computed" from "0
+            // resolved" — the user with no snapshot yet shouldn't see
+            // a misleading "0 resolved" stat.
+            if let snap = snapshots.first {
+                Text("\(snap.totalResolved) resolved")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+            } else {
+                Text("Resolve a prediction to see your score")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
         }
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity)
@@ -94,7 +104,11 @@ struct WatchRootView: View {
 
     private var scoreString: String {
         guard let s = snapshots.first?.brierScore else { return "—" }
-        return String(format: "%.3f", s)
+        // Locale-aware: in `,`-decimal locales (most of Europe) the
+        // hardcoded `String(format: "%.3f", ...)` produced "0.127" while
+        // the rest of the app showed "0,127". Use the shared Foundation
+        // formatter so the watch renders the same string the phone does.
+        return s.formatted(.number.precision(.fractionLength(3)))
     }
 }
 

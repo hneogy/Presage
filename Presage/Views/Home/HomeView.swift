@@ -19,6 +19,8 @@ struct HomeView: View {
            sort: \Prediction.resolvedAt, order: .reverse)
     private var resolvedPredictions: [Prediction]
 
+    @State private var selectedHomePrediction: Prediction?
+
     private var snapshot: CalibrationSnapshot? { snapshots.first }
     private var dueSoon: [Prediction] { Array(activePredictions.prefix(3)) }
     private var totalPredictions: Int { activePredictions.count + resolvedPredictions.count }
@@ -45,6 +47,8 @@ struct HomeView: View {
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 PariBrandMark(size: 22)
+                    .accessibilityLabel("Présage")
+                    .accessibilityAddTraits(.isHeader)
             }
             ToolbarItem(placement: .topBarTrailing) {
                 NavigationLink {
@@ -58,6 +62,10 @@ struct HomeView: View {
             }
         }
         .toolbarBackground(.hidden, for: .navigationBar)
+        .sheet(item: $selectedHomePrediction) { prediction in
+            PredictionDetailSheet(prediction: prediction)
+                .presentationDetents([.medium])
+        }
     }
 
     // MARK: - Stats Row
@@ -103,8 +111,8 @@ struct HomeView: View {
                 HStack(alignment: .firstTextBaseline) {
                     sectionHeader("Resolving Soon", count: dueSoon.count)
                     Spacer()
-                    NavigationLink {
-                        EmptyView()
+                    Button {
+                        engine.activeTab = 1
                     } label: {
                         Text("see all")
                             .font(.system(size: 13, weight: .medium))
@@ -118,6 +126,8 @@ struct HomeView: View {
                             .onTapGesture {
                                 if prediction.isDue {
                                     engine.resolvingPrediction = prediction
+                                } else {
+                                    selectedHomePrediction = prediction
                                 }
                             }
                     }

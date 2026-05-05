@@ -16,6 +16,10 @@ struct EditPredictionSheet: View {
     @State private var confidence: Int = 70
     @State private var resolutionDate: Date = .now
     @State private var showDeleteConfirm = false
+    @State private var saveErrorVisible = false
+    /// Cached so the body doesn't recompute four trim-and-compare passes
+    /// on every keystroke. Recomputed only when the relevant inputs change.
+    @State private var cachedHasChanges = false
 
     var body: some View {
         NavigationStack {
@@ -49,7 +53,7 @@ struct EditPredictionSheet: View {
                     PariButton("Save changes") { save() }
                         .opacity(canSave ? 1 : 0.4)
                         .disabled(!canSave)
-                        .accessibilityHint(hasChanges
+                        .accessibilityHint(cachedHasChanges
                                            ? "Saves your edits and reschedules notifications if the date changed."
                                            : "Disabled — no changes yet.")
 
@@ -74,6 +78,7 @@ struct EditPredictionSheet: View {
                 }
                 .padding(20)
             }
+            .scrollDismissesKeyboard(.interactively)
             .background(DS.Palette.surfacePrimary)
             .navigationTitle("Edit prediction")
             .navigationBarTitleDisplayMode(.inline)
@@ -92,13 +97,23 @@ struct EditPredictionSheet: View {
             } message: {
                 Text("This removes it from the prediction list, calibration curve, and notification queue. This can't be undone.")
             }
+            .alert("Couldn't save", isPresented: $saveErrorVisible) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("This prediction has already been resolved and can't be edited. Resolved predictions stay locked to keep your calibration history honest.")
+            }
         }
         .onAppear {
             claim = prediction.claim
             criteria = prediction.resolutionCriteria
             confidence = prediction.confidencePercent
             resolutionDate = prediction.resolutionDate
+            cachedHasChanges = false
         }
+        .onChange(of: claim) { _, _ in cachedHasChanges = computeHasChanges() }
+        .onChange(of: criteria) { _, _ in cachedHasChanges = computeHasChanges() }
+        .onChange(of: confidence) { _, _ in cachedHasChanges = computeHasChanges() }
+        .onChange(of: resolutionDate) { _, _ in cachedHasChanges = computeHasChanges() }
     }
 
     @ViewBuilder
@@ -113,10 +128,10 @@ struct EditPredictionSheet: View {
     /// actually changed. Tapping save on a no-op shouldn't fire haptics.
     private var canSave: Bool {
         guard claim.count >= 5, criteria.count >= 5, resolutionDate > .now else { return false }
-        return hasChanges
+        return cachedHasChanges
     }
 
-    private var hasChanges: Bool {
+    private func computeHasChanges() -> Bool {
         let claimChanged = claim.trimmingCharacters(in: .whitespacesAndNewlines)
             != prediction.claim.trimmingCharacters(in: .whitespacesAndNewlines)
         let criteriaChanged = criteria.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -127,10 +142,21 @@ struct EditPredictionSheet: View {
     }
 
     private func save() {
+        // Same sanitizer as NewPredictionFlow / CSV import / intents —
+        // strips control chars + bidi overrides + caps length so an
+        // edit can't sneak in something that the original create path
+        // would have rejected.
+        let cleanedClaim = UserTextSanitizer.sanitize(claim, maxLength: 500)
+        let cleanedCriteria = UserTextSanitizer.sanitize(criteria, maxLength: 1000)
+        guard cleanedClaim.count >= 5, cleanedCriteria.count >= 5 else {
+            saveErrorVisible = true
+            return
+        }
+
         let succeeded = engine.editPrediction(
             prediction,
-            claim: claim.trimmingCharacters(in: .whitespacesAndNewlines),
-            resolutionCriteria: criteria.trimmingCharacters(in: .whitespacesAndNewlines),
+            claim: cleanedClaim,
+            resolutionCriteria: cleanedCriteria,
             confidencePercent: confidence,
             resolutionDate: resolutionDate,
             in: context
@@ -138,6 +164,8 @@ struct EditPredictionSheet: View {
         if succeeded {
             HapticEngine.shared.resolutionReveal()
             dismiss()
+        } else {
+            saveErrorVisible = true
         }
     }
 }

@@ -46,6 +46,16 @@ struct ResolutionFlow: View {
                         .foregroundStyle(DS.Palette.textTertiary)
                 }
             }
+            .onDisappear {
+                // Without this, re-opening the same prediction shows the
+                // banner from the prior resolution for a frame before
+                // SwiftUI rebuilds state.
+                selectedOutcome = nil
+                wasFudged = false
+                showFudgeOptions = false
+                revealProgress = 0
+                step = .prompt
+            }
         }
     }
 
@@ -123,15 +133,15 @@ struct ResolutionFlow: View {
                 HStack(spacing: DS.Space.sm) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 14))
-                    Text("I want to say yes, but...")
+                    Text("It's not clear-cut...")
                 }
                 .font(DS.Typo.subhead)
                 .foregroundStyle(DS.Palette.textTertiary)
                 .frame(maxWidth: .infinity)
                 .frame(height: 44)
             }
-            .accessibilityLabel("I want to say yes, but it's a stretch")
-            .accessibilityHint("Opens an honesty check before resolving as ambiguous")
+            .accessibilityLabel("The answer is not clear-cut")
+            .accessibilityHint("Opens an honesty check to help you decide")
 
             if showFudgeOptions {
                 fudgeOptionsView
@@ -193,12 +203,24 @@ struct ResolutionFlow: View {
                 }
 
                 PariButton("Make another prediction", style: .ghost) {
+                    engine.pendingShowNewPrediction = true
                     dismiss()
-                    Task { @MainActor in
-                        try? await Task.sleep(for: .milliseconds(300))
-                        engine.showNewPrediction = true
-                    }
                 }
+
+                Button {
+                    undoResolution()
+                } label: {
+                    HStack(spacing: DS.Space.xs) {
+                        Image(systemName: "arrow.uturn.backward")
+                            .font(.system(size: 12, weight: .semibold))
+                        Text("Wait, I want to change my answer")
+                            .font(DS.Typo.subhead)
+                    }
+                    .foregroundStyle(DS.Palette.textTertiary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 36)
+                }
+                .accessibilityHint("Reverts this resolution and returns to the prompt")
             }
             .padding(.horizontal, DS.Space.base)
             .padding(.bottom, DS.Space.xxxxl)
@@ -348,6 +370,46 @@ struct ResolutionFlow: View {
         guard let outcome = selectedOutcome, outcome != .ambiguous else { return }
         let formatted = PariFormat.brier(individualBrier)
         A11y.announce("You predicted \(prediction.confidencePercent) percent. The outcome was \(outcome == .yes ? "yes" : "no"). Brier score \(formatted).")
+    }
+
+    /// Reverts a just-committed resolution and returns to the prompt phase.
+    /// Removes the outcome, resets resolvedAt, and triggers a calibration
+    /// recompute so the headline Brier reflects the rollback. Necessary
+    /// because the resolution flow commits as soon as the user taps —
+    /// without an explicit undo, an accidental tap is permanent.
+    private func undoResolution() {
+        HapticService.light()
+        // Capture prior state so a save failure can roll the model back
+        // — otherwise the user sees the prompt phase but the calibration
+        // history still reflects the resolved record they thought they
+        // undid.
+        let priorOutcome = prediction.outcome
+        let priorOutcomeRaw = prediction.outcomeRaw
+        let priorFudged = prediction.isFudged
+        let priorResolvedAt = prediction.resolvedAt
+
+        prediction.outcome = .unresolved
+        prediction.outcomeRaw = nil
+        prediction.isFudged = false
+        prediction.resolvedAt = nil
+        guard PariPersistence.attemptSave(context, label: "undo resolution") else {
+            prediction.outcome = priorOutcome
+            prediction.outcomeRaw = priorOutcomeRaw
+            prediction.isFudged = priorFudged
+            prediction.resolvedAt = priorResolvedAt
+            return
+        }
+        selectedOutcome = nil
+        wasFudged = false
+        revealProgress = 0
+        engine.handleForeground(context: context)
+        if reduceMotion {
+            step = .prompt
+        } else {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.86)) {
+                step = .prompt
+            }
+        }
     }
 
     // MARK: - Computed

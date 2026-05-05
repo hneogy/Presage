@@ -115,10 +115,16 @@ struct NewWorkspaceSheet: View {
                     PariInput(placeholder: "Workspace name", text: $name)
                     PariInput(placeholder: "Your name", text: $ownerName)
                     PariButton("Create") {
-                        let ws = TeamWorkspace(name: name, ownerName: ownerName)
+                        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let trimmedOwner = ownerName.trimmingCharacters(in: .whitespacesAndNewlines)
+                        guard trimmedName.count >= 2, trimmedOwner.count >= 2 else { return }
+                        let ws = TeamWorkspace(name: trimmedName, ownerName: trimmedOwner)
                         context.insert(ws)
-                        try? context.save()
-                        dismiss()
+                        if PariPersistence.attemptSave(context, label: "create workspace") {
+                            dismiss()
+                        } else {
+                            context.delete(ws)
+                        }
                     }
                     .opacity(canSave ? 1 : 0.4)
                     .disabled(!canSave)
@@ -136,7 +142,10 @@ struct NewWorkspaceSheet: View {
             }
         }
     }
-    private var canSave: Bool { name.count >= 2 && ownerName.count >= 2 }
+    private var canSave: Bool {
+        name.trimmingCharacters(in: .whitespacesAndNewlines).count >= 2 &&
+        ownerName.trimmingCharacters(in: .whitespacesAndNewlines).count >= 2
+    }
 }
 
 struct WorkspaceDetailView: View {

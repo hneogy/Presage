@@ -1,7 +1,7 @@
 import Testing
 import Foundation
 import SwiftData
-@testable import Pari
+@testable import Presage
 
 @Suite("CalibrationCache")
 @MainActor

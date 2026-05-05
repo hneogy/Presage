@@ -11,17 +11,27 @@ struct OnboardingFlow: View {
     @Environment(\.modelContext) private var context
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
-    @State private var page: OnboardingPage = .hook
+    // SceneStorage so a rotation, app-switch, or return-to-foreground
+    // doesn't snap the user back to the first page mid-onboarding.
+    @SceneStorage("onboarding.page") private var pageStorage: String = OnboardingPage.hook.rawValue
     @State private var claim: String = ""
     @State private var confidence: Int = 70
     @State private var aiSuggested: Int? = nil
     @State private var extractorTask: Task<Void, Never>? = nil
     @FocusState private var focused: Bool
 
-    private enum OnboardingPage {
+    private enum OnboardingPage: String {
         case hook              // 5-second pitch
         case firstPrediction   // <60-second creation
         case youreIn           // single tap-through
+    }
+
+    private var page: OnboardingPage {
+        get { OnboardingPage(rawValue: pageStorage) ?? .hook }
+    }
+
+    private func setPage(_ next: OnboardingPage) {
+        pageStorage = next.rawValue
     }
 
     var body: some View {
@@ -37,7 +47,7 @@ struct OnboardingFlow: View {
                 youreInPage.transition(.opacity)
             }
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: page)
+        .animation(.spring(response: 0.4, dampingFraction: 0.85), value: pageStorage)
     }
 
     // MARK: - Page 1: Hook (5 seconds, one tap)
@@ -74,7 +84,7 @@ struct OnboardingFlow: View {
 
             VStack(spacing: 8) {
                 PariButton("Make my first prediction") {
-                    page = .firstPrediction
+                    setPage(.firstPrediction)
                 }
 
                 Button("Skip onboarding") {
@@ -95,7 +105,7 @@ struct OnboardingFlow: View {
             // Header — minimal, no progress dots, no whisper
             HStack {
                 Button {
-                    page = .hook
+                    setPage(.hook)
                 } label: {
                     Image(systemName: "chevron.left")
                         .foregroundStyle(DS.Palette.textSecondary)
@@ -186,6 +196,12 @@ struct OnboardingFlow: View {
         .onAppear {
             focused = true
         }
+        .onDisappear {
+            // Cancel the AI suggestion task so it can't write @State on
+            // a view that's no longer onscreen.
+            extractorTask?.cancel()
+            extractorTask = nil
+        }
     }
 
     // MARK: - Page 3: You're in
@@ -250,11 +266,14 @@ struct OnboardingFlow: View {
         // Use a concrete, criterion-shaped default so QualityChecker
         // doesn't auto-flag the user's first prediction as vague — that
         // would pollute the wall of shame and confuse early users.
-        let trimmedClaim = claim.trimmingCharacters(in: .whitespacesAndNewlines)
-        let defaultCriteria = "Did the claim '\(trimmedClaim)' actually happen by \(resolutionDate.formatted(.dateTime.month(.abbreviated).day()))?"
+        // Sanitize first: same control-char + bidi-override hygiene
+        // every other create path now applies.
+        let cleanedClaim = UserTextSanitizer.sanitize(claim, maxLength: 500)
+        guard cleanedClaim.count >= 5 else { return }
+        let defaultCriteria = "Did the claim '\(cleanedClaim)' actually happen by \(resolutionDate.formatted(.dateTime.month(.abbreviated).day()))?"
 
         engine.createPrediction(
-            claim: trimmedClaim,
+            claim: cleanedClaim,
             resolutionCriteria: defaultCriteria,
             confidencePercent: confidence,
             resolutionDate: resolutionDate,
@@ -268,7 +287,7 @@ struct OnboardingFlow: View {
         // Schedule the Day-1/3/7 retention push sequence.
         Task { await OnboardingPushScheduler.scheduleRetentionSequence() }
 
-        page = .youreIn
+        setPage(.youreIn)
         // Note: RootView treats `predictionCount > 0` as completed-
         // onboarding even if `hasCompletedOnboarding` is false. So a
         // force-quit between save and the "Show me Présage" tap won't

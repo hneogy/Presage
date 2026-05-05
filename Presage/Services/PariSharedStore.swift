@@ -1,5 +1,8 @@
 import Foundation
+import OSLog
 import SwiftData
+
+private let sharedStoreLogger = Logger(subsystem: "com.pari.neogy", category: "SharedStore")
 
 /// Single source of truth for the SwiftData store URL — used by the main
 /// app, widget extension, and any future extensions. The store lives in
@@ -42,9 +45,21 @@ enum PariSharedStore {
                 cloudKitDatabase: cloudKit ? .private("iCloud.com.pari.neogy") : .none
             )
         }
+        // App Group missing means widgets will silently read an empty store.
+        // Log loudly and flip a persistent flag so Settings can warn the
+        // user. We *don't* assertionFailure here: simulator and unit-test
+        // hosts often lack the entitlement and the original symptom was
+        // already a silent failure, which the flag now fixes.
+        sharedStoreLogger.fault("App Group container unresolved — widgets will not see data")
+        UserDefaults.standard.set(true, forKey: appGroupFallbackFlagKey)
         return ModelConfiguration(
             schema: PariSchema.canonical,
             cloudKitDatabase: cloudKit ? .private("iCloud.com.pari.neogy") : .none
         )
     }
+
+    /// UserDefaults key flipped when the App Group container can't be
+    /// resolved — Settings reads this to render a "widgets won't sync"
+    /// warning instead of pretending everything is fine.
+    static let appGroupFallbackFlagKey = "pari.appGroup.fallback"
 }

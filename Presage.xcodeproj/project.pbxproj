@@ -52,6 +52,9 @@
 		A10045 /* CalibrationCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10045 /* CalibrationCacheTests.swift */; };
 		A10046 /* PredictionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10046 /* PredictionTests.swift */; };
 		A10054 /* ClaimFlipperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10054 /* ClaimFlipperTests.swift */; };
+		A10107 /* ScoringEngineBoundsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10107 /* ScoringEngineBoundsTests.swift */; };
+		A10108 /* CSVImporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10108 /* CSVImporterTests.swift */; };
+		A10109 /* RecurrenceEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10109 /* RecurrenceEngineTests.swift */; };
 		A10047 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10047 /* LiveActivityManager.swift */; };
 		A10048 /* A11y.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10048 /* A11y.swift */; };
 		A10049 /* DSAtmosphere.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10049 /* DSAtmosphere.swift */; };
@@ -212,6 +215,9 @@
 		B10045 /* CalibrationCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalibrationCacheTests.swift; sourceTree = "<group>"; };
 		B10046 /* PredictionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredictionTests.swift; sourceTree = "<group>"; };
 		B10054 /* ClaimFlipperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaimFlipperTests.swift; sourceTree = "<group>"; };
+		B10107 /* ScoringEngineBoundsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoringEngineBoundsTests.swift; sourceTree = "<group>"; };
+		B10108 /* CSVImporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVImporterTests.swift; sourceTree = "<group>"; };
+		B10109 /* RecurrenceEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecurrenceEngineTests.swift; sourceTree = "<group>"; };
 		B10047 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		B10048 /* A11y.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A11y.swift; sourceTree = "<group>"; };
 		B10049 /* DSAtmosphere.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DSAtmosphere.swift; sourceTree = "<group>"; };
@@ -530,6 +536,9 @@
 				B10045 /* CalibrationCacheTests.swift */,
 				B10046 /* PredictionTests.swift */,
 				B10054 /* ClaimFlipperTests.swift */,
+				B10107 /* ScoringEngineBoundsTests.swift */,
+				B10108 /* CSVImporterTests.swift */,
+				B10109 /* RecurrenceEngineTests.swift */,
 			);
 			path = PresageTests;
 			sourceTree = "<group>";
@@ -853,6 +862,9 @@
 				A10045 /* CalibrationCacheTests.swift in Sources */,
 				A10046 /* PredictionTests.swift in Sources */,
 				A10054 /* ClaimFlipperTests.swift in Sources */,
+				A10107 /* ScoringEngineBoundsTests.swift in Sources */,
+				A10108 /* CSVImporterTests.swift in Sources */,
+				A10109 /* RecurrenceEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1077,7 +1089,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pari.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Pari";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Presage.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Presage";
 			};
 			name = Debug;
 		};
@@ -1094,7 +1106,7 @@
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pari.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Pari";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Presage.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Presage";
 			};
 			name = Release;
 		};
@@ -1171,7 +1183,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Pari;
+				TEST_TARGET_NAME = Presage;
 			};
 			name = Debug;
 		};
@@ -1190,7 +1202,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Pari;
+				TEST_TARGET_NAME = Presage;
 			};
 			name = Release;
 		};

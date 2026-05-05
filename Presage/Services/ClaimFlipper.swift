@@ -39,10 +39,14 @@ enum ClaimFlipper {
         func apply(_ input: String) -> String? {
             let options: String.CompareOptions = caseInsensitive ? [.caseInsensitive] : []
             guard let range = input.range(of: from, options: options) else { return nil }
-            // Only match if it's a word boundary (start of string OR preceded by space/punct)
+            // Only match if it's a word boundary (start of string OR
+            // preceded by space/punct). Use `index(_:offsetBy:limitedBy:)`
+            // so an unexpected grapheme-cluster boundary on emoji-heavy
+            // claims can never trap with an out-of-bounds index call.
             let start = range.lowerBound
-            if start != input.startIndex {
-                let before = input[input.index(before: start)]
+            if start != input.startIndex,
+               let prev = input.index(start, offsetBy: -1, limitedBy: input.startIndex) {
+                let before = input[prev]
                 guard before.isWhitespace || before.isPunctuation else { return nil }
             }
             return input.replacingCharacters(in: range, with: to)

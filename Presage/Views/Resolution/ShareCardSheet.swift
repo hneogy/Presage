@@ -16,9 +16,16 @@ struct ShareCardSheet: View {
                         .font(.system(size: 22, weight: .semibold))
                         .foregroundStyle(DS.Palette.textPrimary)
 
+                    // ShareCard is intrinsically 1080×1080 — clamp to a
+                        // 320×320 layout footprint, scale the rendered
+                        // content down to fit. The outer .frame() reserves
+                        // the layout slot; .scaleEffect() shrinks the
+                        // rendered pixels without touching the layout.
+                        // (Previous double-frame was redundant — scaleEffect
+                        // doesn't consume layout, so a second frame after it
+                        // was a no-op.)
                     ShareCard(prediction: prediction, overallBrier: overallBrier)
-                        .frame(width: 320, height: 320)
-                        .scaleEffect(0.296)   // 1080 → 320
+                        .scaleEffect(0.296)
                         .frame(width: 320, height: 320)
 
                     PariButton("Share") {

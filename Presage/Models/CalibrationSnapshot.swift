@@ -1,5 +1,8 @@
 import Foundation
+import OSLog
 import SwiftData
+
+private let calibrationLogger = Logger(subsystem: "com.pari.neogy", category: "CalibrationSnapshot")
 
 @Model
 final class CalibrationSnapshot {
@@ -26,22 +29,78 @@ final class CalibrationSnapshot {
     }
 
     var buckets: [CalibrationBucket] {
-        get { (try? JSONDecoder().decode([CalibrationBucket].self, from: bucketData)) ?? [] }
-        set { bucketData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        get {
+            guard !bucketData.isEmpty else { return [] }
+            do {
+                return try JSONDecoder().decode([CalibrationBucket].self, from: bucketData)
+            } catch {
+                calibrationLogger.error("Failed to decode buckets: \(error.localizedDescription, privacy: .public)")
+                return []
+            }
+        }
+        set {
+            if let encoded = try? JSONEncoder().encode(newValue) {
+                bucketData = encoded
+            } else {
+                calibrationLogger.error("Failed to encode buckets; preserving previous data")
+            }
+        }
     }
 
     var categoryScores: [CategoryScore] {
-        get { (try? JSONDecoder().decode([CategoryScore].self, from: categoryScoresData)) ?? [] }
-        set { categoryScoresData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        get {
+            guard !categoryScoresData.isEmpty else { return [] }
+            do {
+                return try JSONDecoder().decode([CategoryScore].self, from: categoryScoresData)
+            } catch {
+                calibrationLogger.error("Failed to decode categoryScores: \(error.localizedDescription, privacy: .public)")
+                return []
+            }
+        }
+        set {
+            if let encoded = try? JSONEncoder().encode(newValue) {
+                categoryScoresData = encoded
+            } else {
+                calibrationLogger.error("Failed to encode categoryScores; preserving previous data")
+            }
+        }
     }
 
     var horizonScores: [HorizonScore] {
-        get { (try? JSONDecoder().decode([HorizonScore].self, from: horizonScoresData)) ?? [] }
-        set { horizonScoresData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        get {
+            guard !horizonScoresData.isEmpty else { return [] }
+            do {
+                return try JSONDecoder().decode([HorizonScore].self, from: horizonScoresData)
+            } catch {
+                calibrationLogger.error("Failed to decode horizonScores: \(error.localizedDescription, privacy: .public)")
+                return []
+            }
+        }
+        set {
+            if let encoded = try? JSONEncoder().encode(newValue) {
+                horizonScoresData = encoded
+            } else {
+                calibrationLogger.error("Failed to encode horizonScores; preserving previous data")
+            }
+        }
     }
 
     var moodScores: [MoodScore] {
-        get { (try? JSONDecoder().decode([MoodScore].self, from: moodScoresData)) ?? [] }
-        set { moodScoresData = (try? JSONEncoder().encode(newValue)) ?? Data() }
+        get {
+            guard !moodScoresData.isEmpty else { return [] }
+            do {
+                return try JSONDecoder().decode([MoodScore].self, from: moodScoresData)
+            } catch {
+                calibrationLogger.error("Failed to decode moodScores: \(error.localizedDescription, privacy: .public)")
+                return []
+            }
+        }
+        set {
+            if let encoded = try? JSONEncoder().encode(newValue) {
+                moodScoresData = encoded
+            } else {
+                calibrationLogger.error("Failed to encode moodScores; preserving previous data")
+            }
+        }
     }
 }
